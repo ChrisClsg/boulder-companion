@@ -1,0 +1,47 @@
+services:
+  mongodb:
+    image: mongo:8
+    volumes:
+      - mongo-data:/data/db
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/seed.js:ro
+    ports:
+      - "27017:27017"  # expose for Compass or other local clients
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    depends_on:
+      - mongodb
+    volumes:
+      - ./backend/src:/build/src
+      - maven-repo:/root/.m2/repository
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8081"
+      BOULDER_COMPANION_MONGODB_URI: ${BOULDER_COMPANION_MONGODB_URI:-mongodb://mongodb:27017/boulder_companion}
+      BOULDER_COMPANION_GITHUB_CLIENT_ID: ${BOULDER_COMPANION_GITHUB_CLIENT_ID}
+      BOULDER_COMPANION_GITHUB_CLIENT_SECRET: ${BOULDER_COMPANION_GITHUB_CLIENT_SECRET}
+    command: >
+      sh -c 'mvn spring-boot:run
+      -Dspring-boot.run.jvmArguments="$$JAVA_OPTS"'
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: sh -c "npx quasar prepare && npx quasar dev --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+
+volumes:
+  maven-repo:
+  mongo-data:
