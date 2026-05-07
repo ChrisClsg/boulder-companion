@@ -6,6 +6,24 @@
       :todos="todos"
       :meta="meta"
     ></example-component>
+
+    <q-btn
+      label="Login"
+      color="primary"
+      @click="login"
+    ></q-btn>
+
+    <q-btn
+      label="logout"
+      color="primary"
+      @click="logout"
+    ></q-btn>
+
+    <q-btn
+      label="User Info"
+      color="primary"
+      @click="loadUser"
+    ></q-btn>
   </q-page>
 </template>
 
@@ -13,6 +31,30 @@
 import { ref } from 'vue';
 import type { Todo, Meta } from 'components/models';
 import ExampleComponent from 'components/ExampleComponent.vue';
+import { api } from 'src/boot/axios';
+
+const login = () => {
+  const host:string = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin;
+
+  console.log('Login clicked, redirecting to:', host + '/oauth2/authorization/github');
+  window.open(host + '/oauth2/authorization/github', '_self');
+}
+
+const logout = () => {
+  const host:string = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin;
+
+  window.open(host + '/logout', '_self');
+}
+
+const loadUser = () => {
+  api.get('/auth/me')
+    .then(response => {
+      console.log('User data:', response.data);
+    })
+    .catch(error => {
+      console.error('Error loading user data:', error);
+    });
+}
 
 const todos = ref<Todo[]>([
   {
