@@ -1,85 +1,97 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
+  <q-page class="row flex flex-no-wrap">
+    <div class="col-12 q-pa-md">
+      <div class="row items-center q-mb-md">
+        <div class="text-h4">Boulder Companion</div>
+        <q-btn
+          v-if="!authStore.isAuthenticated"
+          label="Login"
+          color="primary"
+          @click="login"
+        />
+        <q-btn
+          v-else
+          label="Logout"
+          color="negative"
+          @click="logout"
+        />
+      </div>
 
-    <q-btn
-      label="Login"
-      color="primary"
-      @click="login"
-    ></q-btn>
+      <div v-if="loading" class="text-center">
+        <q-spinner-dots color="primary" />
+      </div>
 
-    <q-btn
-      label="logout"
-      color="primary"
-      @click="logout"
-    ></q-btn>
+      <div v-else-if="error" class="text-center text-negative">
+        {{ error }}
+      </div>
 
-    <q-btn
-      label="User Info"
-      color="primary"
-      @click="loadUser"
-    ></q-btn>
+      <div v-else-if="authStore.isAuthenticated && gyms.length > 0" class="row flex flex-wrap">
+        <gym-card
+          v-for="gym in gyms"
+          :key="gym.id"
+          :gym="gym"
+        />
+      </div>
+
+      <div v-else-if="authStore.isAuthenticated && gyms.length === 0" class="text-center">
+        <div class="text-h6">No gyms found</div>
+        <q-btn
+          label="Add Gym"
+          color="primary"
+          @click="$router.push('/gyms/new')"
+        />
+      </div>
+
+      <div v-else class="text-center">
+        <div class="text-h6">Please login to view gyms</div>
+        <q-btn
+          label="Login"
+          color="primary"
+          @click="login"
+        />
+      </div>
+    </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ExampleComponent.vue';
-import { api } from 'src/boot/axios';
+import { ref, onMounted } from 'vue'
+import { useQuasar } from 'quasar'
+import { useAuthStore } from '#stores'
+import { gymApi, authApi } from '#boot'
+import type { Gym } from '#types'
+
+const $q = useQuasar()
+const authStore = useAuthStore()
+const gyms = ref<Gym[]>([])
+const loading = ref(false)
+const error = ref<string | null>(null)
+
+const fetchGyms = async () => {
+  loading.value = true
+  error.value = null
+  try {
+    const data = await gymApi.getAll()
+    gyms.value = data
+  } catch (err: any) {
+    error.value = err.message || 'Failed to fetch gyms'
+    $q.notify({ message: error.value, type: 'negative' })
+  } finally {
+    loading.value = false
+  }
+}
 
 const login = () => {
-  const host:string = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin;
-
-  console.log('Login clicked, redirecting to:', host + '/oauth2/authorization/github');
-  window.open(host + '/oauth2/authorization/github', '_self');
+  const host = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin
+  authApi.login(`${host}/oauth2/authorization/github`)
 }
 
 const logout = () => {
-  const host:string = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin;
-
-  window.open(host + '/logout', '_self');
+  authStore.logout()
+  window.location.href = '/logout'
 }
 
-const loadUser = () => {
-  api.get('/auth/me')
-    .then(response => {
-      console.log('User data:', response.data);
-    })
-    .catch(error => {
-      console.error('Error loading user data:', error);
-    });
-}
-
-const todos = ref<Todo[]>([
-  {
-    id: 1,
-    content: 'ct1'
-  },
-  {
-    id: 2,
-    content: 'ct2'
-  },
-  {
-    id: 3,
-    content: 'ct3'
-  },
-  {
-    id: 4,
-    content: 'ct4'
-  },
-  {
-    id: 5,
-    content: 'ct5'
-  }
-]);
-
-const meta = ref<Meta>({
-  totalCount: 1200
-});
+onMounted(async () => {
+  await fetchGyms()
+})
 </script>
