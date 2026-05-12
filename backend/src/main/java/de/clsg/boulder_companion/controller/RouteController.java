@@ -2,7 +2,7 @@ package de.clsg.boulder_companion.controller;
 
 import de.clsg.boulder_companion.service.RouteService;
 import de.clsg.boulder_companion.dto.RouteDto;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,7 +18,6 @@ public class RouteController {
 
     private final RouteService routeService;
 
-    @Autowired
     public RouteController(RouteService routeService) {
         this.routeService = routeService;
     }
@@ -48,8 +47,7 @@ public class RouteController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('ROUTE_SETTER')")
     public ResponseEntity<RouteDto> createRoute(@RequestBody RouteDto routeDto) {
-        Route route = routeDto.toRoute();
-        return ResponseEntity.ok(routeService.createRoute(route));
+        return ResponseEntity.ok(routeService.createRoute(routeDto));
     }
 
     @PutMapping("/{id}")

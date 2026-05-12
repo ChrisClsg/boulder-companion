@@ -67,7 +67,7 @@
         />
         <div class="row q-gap-sm">
           <q-btn label="Save" type="submit" color="primary" />
-          <q-btn label="Cancel" color="grey" @click="$router.push(`/gyms/${gym.id}`)" />
+          <q-btn label="Cancel" color="grey" @click="$router.push(`/gyms/${gym?.id}`)" />
         </div>
       </q-form>
     </div>
@@ -78,14 +78,12 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { gymApi } from '#boot'
-import { useGymStore } from '#stores'
-import type { Gym } from '#types'
+import { gymApi } from 'boot/axios'
+import type { Gym } from 'src/types'
 
 const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
-const gymStore = useGymStore()
 
 const gym = ref<Gym | null>(null)
 const form = ref({
@@ -126,8 +124,8 @@ onMounted(async () => {
         sunday: data.openingHours.sunday,
       },
     }
-  } catch (err: any) {
-    $q.notify({ message: err.message || 'Failed to fetch gym', type: 'negative' })
+  } catch (err: unknown) {
+    $q.notify({ message: (err as Error).message || 'Failed to fetch gym', type: 'negative' })
   }
 })
 

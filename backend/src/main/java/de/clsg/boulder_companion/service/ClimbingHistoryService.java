@@ -3,11 +3,9 @@ package de.clsg.boulder_companion.service;
 import de.clsg.boulder_companion.model.ClimbingHistory;
 import de.clsg.boulder_companion.repository.ClimbingHistoryRepository;
 import de.clsg.boulder_companion.dto.ClimbingHistoryDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +14,6 @@ public class ClimbingHistoryService {
 
     private final ClimbingHistoryRepository climbingHistoryRepository;
 
-    @Autowired
     public ClimbingHistoryService(ClimbingHistoryRepository climbingHistoryRepository) {
         this.climbingHistoryRepository = climbingHistoryRepository;
     }
@@ -66,13 +63,20 @@ public class ClimbingHistoryService {
     @Transactional(readOnly = true)
     public List<ClimbingHistoryDto> getToppedRoutesByUserId(String userId) {
         return climbingHistoryRepository.findByUserId(userId).stream()
-            .filter(ClimbingHistory::isTopped)
+            .filter(ClimbingHistory::topped)
             .map(ClimbingHistoryDto::fromHistory)
             .toList();
     }
 
     @Transactional(readOnly = true)
     public List<ClimbingHistoryDto> getHistoryByGymId(String gymId) {
+        return climbingHistoryRepository.findByGymId(gymId).stream()
+            .map(ClimbingHistoryDto::fromHistory)
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClimbingHistoryDto> getHistoryByRouteId(String gymId) {
         return climbingHistoryRepository.findByGymId(gymId).stream()
             .map(ClimbingHistoryDto::fromHistory)
             .toList();

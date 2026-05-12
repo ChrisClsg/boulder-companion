@@ -3,12 +3,10 @@ package de.clsg.boulder_companion.service;
 import de.clsg.boulder_companion.model.User;
 import de.clsg.boulder_companion.repository.UserRepository;
 import de.clsg.boulder_companion.dto.UserDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.Map;
 
@@ -17,7 +15,6 @@ public class AuthService {
 
     private final UserRepository userRepository;
 
-    @Autowired
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

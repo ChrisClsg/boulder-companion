@@ -1,6 +1,6 @@
-import { api, authApi } from '#boot'
-import { useAuthStore } from '#stores'
-import type { User } from '#types'
+import { api, authApi } from 'boot/axios'
+import { useAuthStore } from 'stores/authStore'
+import type { User } from 'src/types'
 
 export const authService = {
   async fetchUser(): Promise<User> {

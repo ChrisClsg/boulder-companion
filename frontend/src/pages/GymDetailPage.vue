@@ -51,16 +51,14 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { gymApi, routeApi } from '#boot'
-import { useAuthStore, useGymStore, useRouteStore } from '#stores'
-import type { Gym, Route } from '#types'
+import { gymApi, routeApi } from 'boot/axios'
+import { useAuthStore } from 'stores/authStore'
+import type { Gym, Route } from 'src/types'
 
 const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
 const authStore = useAuthStore()
-const gymStore = useGymStore()
-const routeStore = useRouteStore()
 
 const gym = ref<Gym | null>(null)
 const routes = ref<Route[]>([])
@@ -73,8 +71,8 @@ const fetchGym = async () => {
   try {
     const data = await gymApi.getById(route.params.id as string)
     gym.value = data
-  } catch (err: any) {
-    error.value = err.message || 'Failed to fetch gym'
+    } catch (err: unknown) {
+    error.value = (err as Error).message || 'Failed to fetch gym'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false
@@ -87,8 +85,8 @@ const fetchRoutes = async () => {
   try {
     const data = await routeApi.getByGym(route.params.id as string)
     routes.value = data
-  } catch (err: any) {
-    error.value = err.message || 'Failed to fetch routes'
+  } catch (err: unknown) {
+    error.value = (err as Error).message || 'Failed to fetch routes'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false

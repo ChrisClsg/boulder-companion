@@ -57,9 +57,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { useAuthStore } from '#stores'
-import { gymApi, authApi } from '#boot'
-import type { Gym } from '#types'
+import { useAuthStore } from 'stores/authStore'
+import { gymApi, authApi } from 'boot/axios'
+import type { Gym } from 'src/types'
 
 const $q = useQuasar()
 const authStore = useAuthStore()

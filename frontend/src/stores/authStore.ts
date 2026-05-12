@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { api, authApi } from '#boot'
-import type { User } from '#types'
+import { authApi } from 'boot/axios'
+import type { User } from 'src/types'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -31,6 +31,7 @@ export const useAuthStore = defineStore('auth', {
         this.user = response.data as User
         this.isAuthenticated = true
       } catch (error) {
+        console.error('Failed to fetch user:', error)
         this.clearUser()
       } finally {
         this.isLoading = false

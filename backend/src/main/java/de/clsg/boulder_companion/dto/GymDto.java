@@ -3,7 +3,6 @@ package de.clsg.boulder_companion.dto;
 import de.clsg.boulder_companion.model.Gym;
 
 import java.time.Instant;
-import java.util.stream.Collectors;
 
 public record GymDto(
     String id,

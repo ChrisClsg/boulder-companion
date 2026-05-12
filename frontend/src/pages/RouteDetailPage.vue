@@ -50,9 +50,11 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { routeApi, historyApi } from '#boot'
-import { useAuthStore, useRouteStore, useHistoryStore } from '#stores'
-import type { Route, ClimbingHistory } from '#types'
+import { routeApi, historyApi } from 'boot/axios'
+import { useAuthStore } from 'stores/authStore'
+import { useHistoryStore } from 'stores/historyStore'
+import { useRouteStore } from 'stores/routeStore'
+import type { Route, ClimbingHistory } from 'src/types'
 
 const route = useRoute()
 const router = useRouter()

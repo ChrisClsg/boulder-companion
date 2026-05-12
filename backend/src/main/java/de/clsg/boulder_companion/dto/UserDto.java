@@ -3,8 +3,6 @@ package de.clsg.boulder_companion.dto;
 import de.clsg.boulder_companion.model.User;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 public record UserDto(
     String id,
     String githubId,

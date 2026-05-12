@@ -1,6 +1,6 @@
-import { api, historyApi } from '#boot'
-import { useHistoryStore } from '#stores'
-import type { ClimbingHistory } from '#types'
+import { api, historyApi } from 'boot/axios'
+import { useHistoryStore } from 'stores/historyStore'
+import type { ClimbingHistory } from 'src/types'
 
 export const historyService = {
   async fetchHistory(userId?: string, gymId?: string, routeId?: string): Promise<ClimbingHistory[]> {

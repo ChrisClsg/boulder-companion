@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { routeApi } from '#boot'
-import type { Route } from '#types'
+import { routeApi } from 'boot/axios'
+import type { Route } from 'src/types'
 
 export const useRouteStore = defineStore('routes', {
   state: () => ({

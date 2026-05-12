@@ -3,10 +3,10 @@ package de.clsg.boulder_companion.service;
 import de.clsg.boulder_companion.model.Gym;
 import de.clsg.boulder_companion.repository.GymRepository;
 import de.clsg.boulder_companion.dto.GymDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +15,6 @@ public class GymService {
 
     private final GymRepository gymRepository;
 
-    @Autowired
     public GymService(GymRepository gymRepository) {
         this.gymRepository = gymRepository;
     }
@@ -52,7 +51,7 @@ public class GymService {
             updatedGym.openingHours(),
             existingGym.adminId(),
             existingGym.createdAt(),
-            System.currentTimeMillis()
+            Instant.now()
         );
 
         return GymDto.fromGym(gymRepository.save(existingGym));

@@ -2,10 +2,10 @@
   <q-card class="history-card">
     <q-card-section>
       <div class="text-body1 text-primary">
-        {{ history.route.name }}
+        {{ history.routeId }}
       </div>
       <div class="text-caption text-grey-6">
-        {{ formatDate(history.date) }}
+        {{ formatDate(history.createdAt) }}
       </div>
     </q-card-section>
 
@@ -21,7 +21,7 @@
 
     <q-card-section v-if="history.userRating > 0">
       <q-rating
-        v-model="history.userRating"
+        :model-value="history.userRating"
         size="sm"
         model="number"
         step="1"
@@ -35,7 +35,7 @@
       </div>
     </q-card-section>
 
-    <q-card-section v-if="$store.auth.isAuthenticated">
+    <q-card-section v-if="authStore.isAuthenticated">
       <q-btn
         v-if="!history.topped"
         label="Mark as topped"
@@ -55,10 +55,13 @@
 </template>
 
 <script setup lang="ts">
+import { getErrorMessage } from 'src/utils/errors'
+import { historyApi } from 'boot/axios'
 import { useQuasar } from 'quasar'
-import { useAuthStore } from '#stores'
-import { historyApi } from '#boot'
-import type { ClimbingHistory } from '#types'
+import type { ClimbingHistory } from 'src/types'
+import { useAuthStore } from 'src/stores/authStore'
+
+const authStore = useAuthStore()
 
 const props = defineProps<{ history: ClimbingHistory }>()
 const emit = defineEmits<{
@@ -67,7 +70,6 @@ const emit = defineEmits<{
 }>()
 
 const $q = useQuasar()
-const authStore = useAuthStore()
 
 const formatDate = (dateStr: string): string => {
   return new Date(dateStr).toLocaleDateString()
@@ -86,19 +88,19 @@ const formatFeedback = (feedback: string): string => {
 
 const updateRating = async (rating: number) => {
   try {
-    await historyApi.update(props.history.id, { userRating: rating })
+    await historyApi.update(props.history.id, { ...props.history, userRating: rating })
     emit('update', { ...props.history, userRating: rating })
-  } catch (error: any) {
-    $q.notify({ message: error?.message || 'Failed to update rating', type: 'negative' })
+  } catch (error: unknown) {
+    $q.notify({ message: getErrorMessage(error, 'Failed to update rating'), type: 'negative' })
   }
 }
 
 const markAsTopped = async () => {
   try {
-    await historyApi.update(props.history.id, { topped: true })
+    await historyApi.update(props.history.id, { ...props.history, topped: true })
     emit('update', { ...props.history, topped: true })
-  } catch (error: any) {
-    $q.notify({ message: error?.message || 'Failed to mark as topped', type: 'negative' })
+  } catch (error: unknown) {
+    $q.notify({ message: getErrorMessage(error, 'Failed to mark as topped'), type: 'negative' })
   }
 }
 
@@ -106,8 +108,8 @@ const removeHistory = async () => {
   try {
     await historyApi.delete(props.history.id)
     emit('remove', props.history)
-  } catch (error: any) {
-    $q.notify({ message: error?.message || 'Failed to remove history', type: 'negative' })
+  } catch (error: unknown) {
+    $q.notify({ message: getErrorMessage(error, 'Failed to remove history'), type: 'negative' })
   }
 }
 </script>

@@ -4,7 +4,6 @@ import de.clsg.boulder_companion.model.Route;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record RouteDto(
     String id,
@@ -28,21 +27,32 @@ public record RouteDto(
             route.name(),
             route.difficulty(),
             route.holdColor(),
-            route.holdTypes() != null ? route.holdTypes().stream().collect(Collectors.toList()) : List.of(),
+            route.holdTypes() != null ? List.copyOf(route.holdTypes()) : List.of(),
             route.setterId(),
             route.wall(),
             route.archived(),
             route.archivedAt(),
-            route.images() != null ? route.images().stream().collect(Collectors.toList()) : List.of(),
+            route.images() != null ? List.copyOf(route.images()) : List.of(),
             route.createdAt(),
             route.updatedAt()
         );
     }
 
     public Route toRoute() {
-        return new Route(id, gymId, name, difficulty, holdColor,
-            holdTypes != null ? holdTypes : List.of(), setterId, wall, archived,
-            archivedAt, images != null ? images.stream().map(Route.Image::new).collect(Collectors.toList()),
-            createdAt, updatedAt);
+        return new Route(
+            id,
+            gymId,
+            name,
+            difficulty,
+            holdColor,
+            holdTypes != null ? List.copyOf(holdTypes) : List.of(),
+            setterId,
+            wall,
+            archived,
+            archivedAt,
+            images != null ? List.copyOf(images) : List.of(),
+            createdAt,
+            updatedAt
+        );
     }
 }

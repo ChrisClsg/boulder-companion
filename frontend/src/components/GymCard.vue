@@ -16,7 +16,7 @@
         label="Website"
         color="primary"
         flat
-        @click="$q.openURL(gym.website)"
+        @click="openURL(gym.website)"
       />
     </q-card-section>
 
@@ -29,7 +29,7 @@
       </div>
     </q-card-section>
 
-    <q-card-section v-if="$store.auth.isAuthenticated">
+    <q-card-section v-if="authStore.isAuthenticated">
       <q-btn
         :label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
         color="primary"
@@ -49,20 +49,21 @@
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from 'quasar'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '#stores'
-import { favoriteApi } from '#boot'
-import type { Gym } from '#types'
+import { openURL, useQuasar } from 'quasar'
+import { useAuthStore } from 'stores/authStore'
+import { useGymStore } from 'stores/gymStore'
+import { favoriteApi } from 'boot/axios'
+import type { Gym } from 'src/types'
+import { computed } from 'vue'
+import { getErrorMessage } from 'src/utils/errors'
 
 const props = defineProps<{ gym: Gym }>()
 const $q = useQuasar()
-const router = useRouter()
 const authStore = useAuthStore()
 const favoriteStore = useGymStore()
 
 const isFavorite = computed(() => {
-  return favoriteStore.gyms.some(g => g.id === props.gym.id)
+  return favoriteStore.gyms.some((g: Gym) => g.id === props.gym.id)
 })
 
 const toggleFavorite = async () => {
@@ -73,8 +74,8 @@ const toggleFavorite = async () => {
       await favoriteApi.add(props.gym.id)
     }
     await fetchGyms()
-  } catch (error: any) {
-    $q.notify({ message: error?.message || 'Failed to update favorites', type: 'negative' })
+  } catch (error: unknown) {
+    $q.notify({ message: getErrorMessage(error, 'Failed to update favorites'), type: 'negative' })
   }
 }
 

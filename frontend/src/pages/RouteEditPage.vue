@@ -63,9 +63,9 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { routeApi } from '#boot'
-import { useRouteStore } from '#stores'
-import type { Route } from '#types'
+import { routeApi } from 'boot/axios'
+import { useRouteStore } from 'stores/routeStore'
+import type { Route } from 'src/types'
 
 const route = useRoute()
 const router = useRouter()

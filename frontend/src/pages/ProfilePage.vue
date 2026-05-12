@@ -49,9 +49,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { authApi, historyApi } from '#boot'
-import { useAuthStore, useHistoryStore } from '#stores'
-import type { User, ClimbingHistory } from '#types'
+import { authApi, historyApi } from 'boot/axios'
+import { useAuthStore } from 'stores/authStore'
+import { useHistoryStore } from 'stores/historyStore'
+import type { User, ClimbingHistory } from 'src/types'
 
 const $q = useQuasar()
 const authStore = useAuthStore()

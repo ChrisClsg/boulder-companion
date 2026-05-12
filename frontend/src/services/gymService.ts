@@ -1,6 +1,5 @@
-import { api, gymApi } from '#boot'
-import { useGymStore } from '#stores'
-import type { Gym } from '#types'
+import { useGymStore } from 'stores/gymStore'
+import type { Gym } from 'src/types'
 
 export const gymService = {
   async fetchGyms(): Promise<Gym[]> {

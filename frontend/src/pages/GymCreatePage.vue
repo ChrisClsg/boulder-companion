@@ -76,16 +76,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { gymApi } from '#boot'
-import { useGymStore } from '#stores'
-import type { Gym } from '#types'
+import { gymApi } from 'boot/axios'
 
-const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
-const gymStore = useGymStore()
 
 const form = ref({
   name: '',
@@ -112,8 +108,8 @@ const createGym = async () => {
     })
     $q.notify({ message: 'Gym created successfully', type: 'positive' })
     router.push('/gyms')
-  } catch (err: any) {
-    $q.notify({ message: err.message || 'Failed to create gym', type: 'negative' })
+  } catch (err: unknown) {
+    $q.notify({ message: (err as Error).message || 'Failed to create gym', type: 'negative' })
   }
 }
 </script>

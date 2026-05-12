@@ -62,16 +62,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { routeApi } from '#boot'
-import { useRouteStore } from '#stores'
-import type { Route } from '#types'
+import { routeApi } from 'boot/axios'
 
-const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
-const routeStore = useRouteStore()
 
 const form = ref({
   gymId: '',

@@ -2,7 +2,8 @@ package de.clsg.boulder_companion.controller;
 
 import de.clsg.boulder_companion.service.AuthService;
 import de.clsg.boulder_companion.dto.UserDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import de.clsg.boulder_companion.model.User;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -18,7 +19,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal OAuth2User user) {
+    public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal OAuth2User user) {
         return ResponseEntity.ok(authService.getCurrentUser());
     }
 

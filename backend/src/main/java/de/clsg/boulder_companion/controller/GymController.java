@@ -2,10 +2,10 @@ package de.clsg.boulder_companion.controller;
 
 import de.clsg.boulder_companion.service.GymService;
 import de.clsg.boulder_companion.dto.GymDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import de.clsg.boulder_companion.model.Gym;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,6 @@ public class GymController {
 
     private final GymService gymService;
 
-    @Autowired
     public GymController(GymService gymService) {
         this.gymService = gymService;
     }

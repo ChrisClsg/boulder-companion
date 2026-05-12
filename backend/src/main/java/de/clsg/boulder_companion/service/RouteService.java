@@ -3,7 +3,6 @@ package de.clsg.boulder_companion.service;
 import de.clsg.boulder_companion.model.Route;
 import de.clsg.boulder_companion.repository.RouteRepository;
 import de.clsg.boulder_companion.dto.RouteDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +15,6 @@ public class RouteService {
 
     private final RouteRepository routeRepository;
 
-    @Autowired
     public RouteService(RouteRepository routeRepository) {
         this.routeRepository = routeRepository;
     }
@@ -41,29 +39,30 @@ public class RouteService {
     }
 
     @Transactional
-    public RouteDto createRoute(Route route) {
+    public RouteDto createRoute(RouteDto routeDto) {
+        Route route = routeDto.toRoute();
         return RouteDto.fromRoute(routeRepository.save(route));
     }
 
     @Transactional
-    public RouteDto updateRoute(String id, Route updatedRoute) {
+    public RouteDto updateRoute(String id, RouteDto updatedRouteDto) {
         Route existingRoute = routeRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Route not found"));
 
         existingRoute = new Route(
             existingRoute.id(),
             existingRoute.gymId(),
-            updatedRoute.name(),
-            updatedRoute.difficulty(),
-            updatedRoute.holdColor(),
-            updatedRoute.holdTypes() != null ? updatedRoute.holdTypes() : existingRoute.holdTypes(),
+            updatedRouteDto.name(),
+            updatedRouteDto.difficulty(),
+            updatedRouteDto.holdColor(),
+            updatedRouteDto.holdTypes() != null ? updatedRouteDto.holdTypes() : existingRoute.holdTypes(),
             existingRoute.setterId(),
-            updatedRoute.wall(),
-            updatedRoute.archived(),
-            updatedRoute.archived() ? Instant.now() : existingRoute.archivedAt(),
-            updatedRoute.images() != null ? updatedRoute.images() : existingRoute.images(),
+            updatedRouteDto.wall(),
+            updatedRouteDto.archived(),
+            updatedRouteDto.archived() ? Instant.now() : existingRoute.archivedAt(),
+            updatedRouteDto.images() != null ? updatedRouteDto.images() : existingRoute.images(),
             existingRoute.createdAt(),
-            System.currentTimeMillis()
+            Instant.now()
         );
 
         return RouteDto.fromRoute(routeRepository.save(existingRoute));

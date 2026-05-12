@@ -45,14 +45,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { historyApi, gymApi } from '#boot'
-import { useAuthStore, useGymStore, useHistoryStore } from '#stores'
-import type { ClimbingHistory, Gym } from '#types'
+import { historyApi, gymApi } from 'boot/axios'
+import type { ClimbingHistory, Gym } from 'src/types'
 
 const $q = useQuasar()
-const authStore = useAuthStore()
-const gymStore = useGymStore()
-const historyStore = useHistoryStore()
 
 const history = ref<ClimbingHistory[]>([])
 const gyms = ref<Gym[]>([])
@@ -78,8 +74,8 @@ const fetchGyms = async () => {
     const data = await gymApi.getAll()
     gyms.value = data
     gymOptions.value = data.map(g => g.id)
-  } catch (err: any) {
-    $q.notify({ message: err.message || 'Failed to fetch gyms', type: 'negative' })
+  } catch (err: unknown) {
+    $q.notify({ message: (err as Error).message || 'Failed to fetch gyms', type: 'negative' })
   }
 }
 
@@ -89,8 +85,8 @@ const fetchHistory = async () => {
   try {
     const data = await historyApi.getAll()
     history.value = data
-  } catch (err: any) {
-    error.value = err.message || 'Failed to fetch history'
+  } catch (err: unknown) {
+    error.value = (err as Error).message || 'Failed to fetch history'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false

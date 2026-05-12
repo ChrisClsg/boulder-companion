@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { historyApi } from '#boot'
-import type { ClimbingHistory } from '#types'
+import { historyApi } from 'boot/axios'
+import type { ClimbingHistory } from 'src/types'
 
 export const useHistoryStore = defineStore('history', {
   state: () => ({

@@ -2,7 +2,6 @@ package de.clsg.boulder_companion.controller;
 
 import de.clsg.boulder_companion.service.ClimbingHistoryService;
 import de.clsg.boulder_companion.dto.ClimbingHistoryDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,6 @@ public class HistoryController {
 
     private final ClimbingHistoryService climbingHistoryService;
 
-    @Autowired
     public HistoryController(ClimbingHistoryService climbingHistoryService) {
         this.climbingHistoryService = climbingHistoryService;
     }

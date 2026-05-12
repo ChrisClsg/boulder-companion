@@ -1,6 +1,5 @@
-import { api, routeApi } from '#boot'
-import { useRouteStore } from '#stores'
-import type { Route } from '#types'
+import { useRouteStore } from 'stores/routeStore'
+import type { Route } from 'src/types'
 
 export const routeService = {
   async fetchRoutesByGym(gymId: string): Promise<Route[]> {
