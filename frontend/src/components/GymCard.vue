@@ -42,7 +42,7 @@
       <q-btn
         label="View Details"
         color="primary"
-        :to="`/gyms/${gym.id}`"
+        :to="{ name: 'GymDetail', params: { id: gym.id } }"
       />
     </q-card-section>
   </q-card>
