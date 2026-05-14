@@ -50,9 +50,9 @@
 
 <script setup lang="ts">
 import { openURL, useQuasar } from 'quasar'
-import { useAuthStore } from 'stores/authStore'
-import { useFavoriteStore } from 'stores/favoriteStore'
-import { favoriteApi } from 'boot/axios'
+import { useAuthStore } from 'src/stores/authStore'
+import { useFavoriteStore } from 'src/stores/favoriteStore'
+import { favoriteApi } from 'src/boot/axios'
 import type { Gym } from 'src/types'
 import { computed } from 'vue'
 import { getErrorMessage } from 'src/utils/errors'

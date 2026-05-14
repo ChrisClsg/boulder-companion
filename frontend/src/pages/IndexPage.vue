@@ -57,8 +57,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { useAuthStore } from 'stores/authStore'
-import { gymApi, authApi } from 'boot/axios'
+import { useAuthStore } from 'src/stores/authStore'
+import { gymApi, authApi } from 'src/boot/axios'
 import type { Gym } from 'src/types'
 
 const $q = useQuasar()
@@ -87,11 +87,12 @@ const login = () => {
 }
 
 const logout = () => {
-  authStore.logout()
+  authStore.clearUser()
   window.location.href = '/logout'
 }
 
 onMounted(async () => {
+  await authStore.fetchUser()
   await fetchGyms()
 })
 </script>

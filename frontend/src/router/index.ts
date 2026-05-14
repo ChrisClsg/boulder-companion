@@ -5,6 +5,7 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
+import { useAuthStore } from 'src/stores/authStore';
 import routes from './routes';
 
 /*
@@ -29,6 +30,14 @@ export default defineRouter((/* { store, ssrContext } */) => {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  // Refresh auth store after navigation (Vue Router v4 uses 'afterEach' not 'afterGoto')
+  Router.afterEach(() => {
+    // Use setTimeout to ensure we're in the new route before fetching
+    setTimeout(() => {
+      useAuthStore().fetchUser().catch(console.error);
+    }, 100);
   });
 
   return Router;
