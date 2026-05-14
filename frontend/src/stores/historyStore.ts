@@ -33,8 +33,8 @@ export const useHistoryStore = defineStore('history', {
 
         const response = await historyApi.getAll(params)
         this.history = response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to fetch history'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to fetch history'
         throw error
       } finally {
         this.isLoading = false
@@ -46,9 +46,9 @@ export const useHistoryStore = defineStore('history', {
       this.error = null
       try {
         const response = await historyApi.getById(id)
-        this.currentHistory = response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to fetch history'
+        this.currentHistory = response.data as ClimbingHistory
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to fetch history'
         throw error
       } finally {
         this.isLoading = false
@@ -61,8 +61,8 @@ export const useHistoryStore = defineStore('history', {
         const response = await historyApi.create(history)
         this.history.push(response.data)
         return response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to create history'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to create history'
         throw error
       }
     },
@@ -76,8 +76,8 @@ export const useHistoryStore = defineStore('history', {
           this.history[index] = response.data
         }
         return response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to update history'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to update history'
         throw error
       }
     },
@@ -87,8 +87,8 @@ export const useHistoryStore = defineStore('history', {
       try {
         await historyApi.delete(id)
         this.history = this.history.filter(h => h.id !== id)
-      } catch (error: any) {
-        this.error = error.message || 'Failed to delete history'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to delete history'
         throw error
       }
     },
@@ -103,8 +103,8 @@ export const useHistoryStore = defineStore('history', {
 
         const response = await historyApi.getToppedByUser(userId || gymId || '')
         this.history = response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to fetch topped routes'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to fetch topped routes'
         throw error
       } finally {
         this.isLoading = false

@@ -73,8 +73,8 @@ const fetchGyms = async () => {
   try {
     const data = await gymApi.getAll()
     gyms.value = data
-  } catch (err: any) {
-    error.value = err.message || 'Failed to fetch gyms'
+  } catch (err: unknown) {
+    error.value = (err as { message?: string }).message || 'Failed to fetch gyms'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false

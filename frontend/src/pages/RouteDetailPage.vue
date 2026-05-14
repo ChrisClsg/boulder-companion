@@ -8,18 +8,18 @@
       {{ error }}
     </div>
 
-    <div v-else-if="route" class="q-pa-md">
-      <div class="text-h4">{{ route.name }}</div>
-      <div class="text-body2 text-grey-7">{{ route.wall }}</div>
-      <div class="text-body2 text-grey-7">Difficulty: {{ route.difficulty.value }} ({{ route.difficulty.scale }})</div>
-      <div class="text-body2 text-grey-7">Hold color: {{ route.holdColor }}</div>
-      <div class="text-body2 text-grey-7">Hold types: {{ route.holdTypes.join(', ') }}</div>
+    <div v-else-if="routeData" class="q-pa-md">
+      <div class="text-h4">{{ routeData.name }}</div>
+      <div class="text-body2 text-grey-7">{{ routeData.wall }}</div>
+      <div class="text-body2 text-grey-7">Difficulty: {{ routeData.difficulty.value }} ({{ routeData.difficulty.scale }})</div>
+      <div class="text-body2 text-grey-7">Hold color: {{ routeData.holdColor }}</div>
+      <div class="text-body2 text-grey-7">Hold types: {{ routeData.holdTypes.join(', ') }}</div>
 
       <div class="q-mt-md">
         <h5 class="text-h6">Images</h5>
-        <div v-if="route.images && route.images.length > 0" class="row flex flex-wrap">
+        <div v-if="routeData.images && routeData.images.length > 0" class="row flex flex-wrap">
           <q-img
-            v-for="(img, index) in route.images"
+            v-for="(img, index) in routeData.images"
             :key="index"
             :src="img.url"
             :caption="img.caption"
@@ -47,21 +47,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { routeApi, historyApi } from 'boot/axios'
 import { useAuthStore } from 'stores/authStore'
-import { useHistoryStore } from 'stores/historyStore'
-import { useRouteStore } from 'stores/routeStore'
 import type { Route, ClimbingHistory } from 'src/types'
 
 const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
 const authStore = useAuthStore()
-const routeStore = useRouteStore()
-const historyStore = useHistoryStore()
 
 const routeData = ref<Route | null>(null)
 const history = ref<ClimbingHistory[]>([])
@@ -72,10 +68,10 @@ const fetchRoute = async () => {
   loading.value = true
   error.value = null
   try {
-    const data = await routeApi.getById(route.params.id as string)
-    routeData.value = data
-  } catch (err: any) {
-    error.value = err.message || 'Failed to fetch route'
+    const response = await routeApi.getById(route.params.id as string)
+    routeData.value = response.data as Route
+  } catch (err: unknown) {
+    error.value = (err as { message?: string }).message || 'Failed to fetch route'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false
@@ -86,10 +82,10 @@ const fetchHistory = async () => {
   loading.value = true
   error.value = null
   try {
-    const data = await historyApi.getByRoute(route.params.id as string)
-    history.value = data
-  } catch (err: any) {
-    error.value = err.message || 'Failed to fetch history'
+    const response = await historyApi.getByRoute(route.params.id as string)
+    history.value = response.data as ClimbingHistory[]
+  } catch (err: unknown) {
+    error.value = (err as { message?: string }).message || 'Failed to fetch history'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false
@@ -111,7 +107,7 @@ onMounted(async () => {
   if (authStore.isAuthenticated) {
     await Promise.all([fetchRoute(), fetchHistory()])
   } else {
-    router.push('/')
+    await router.push('/')
   }
 })
 </script>

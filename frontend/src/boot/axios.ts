@@ -86,6 +86,7 @@ export const historyApi = {
 }
 
 export const favoriteApi = {
+  getGyms: () => api.get('/favorites/gyms'),
   add: (gymId: string) => api.post(`/favorites/${gymId}`),
   remove: (gymId: string) => api.delete(`/favorites/${gymId}`),
 }

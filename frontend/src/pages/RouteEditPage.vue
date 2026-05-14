@@ -64,13 +64,11 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { routeApi } from 'boot/axios'
-import { useRouteStore } from 'stores/routeStore'
-import type { Route } from 'src/types'
+import type { Route, Image } from 'src/types'
 
 const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
-const routeStore = useRouteStore()
 
 const routeData = ref<Route | null>(null)
 const form = ref({
@@ -85,49 +83,66 @@ const form = ref({
   setterId: '',
   wall: '',
   archived: false,
-  archivedAt: null,
-  images: [],
-  createdAt: null,
-  updatedAt: null,
+  archivedAt: '',
+  images: [] as Image[],
+  createdAt: '',
+  updatedAt: '',
 })
 
 onMounted(async () => {
   if (routeData.value) return
   try {
-    const data = await routeApi.getById(route.params.id as string)
-    routeData.value = data
+    const response = await routeApi.getById(route.params.id as string)
+    const fetchedRoute = response.data as Route
+    routeData.value = fetchedRoute
     form.value = {
-      gymId: data.gymId,
-      name: data.name,
+      gymId: fetchedRoute.gymId,
+      name: fetchedRoute.name,
       difficulty: {
-        value: data.difficulty.value,
-        scale: data.difficulty.scale,
+        value: fetchedRoute.difficulty.value,
+        scale: fetchedRoute.difficulty.scale,
       },
-      holdColor: data.holdColor,
-      holdTypes: data.holdTypes || [],
-      setterId: data.setterId,
-      wall: data.wall,
-      archived: data.archived,
-      archivedAt: data.archivedAt,
-      images: data.images || [],
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
+      holdColor: fetchedRoute.holdColor,
+      holdTypes: fetchedRoute.holdTypes || [],
+      setterId: fetchedRoute.setterId,
+      wall: fetchedRoute.wall,
+      archived: fetchedRoute.archived,
+      archivedAt: fetchedRoute.archivedAt,
+      images: fetchedRoute.images || [],
+      createdAt: fetchedRoute.createdAt,
+      updatedAt: fetchedRoute.updatedAt,
     }
-  } catch (err: any) {
-    $q.notify({ message: err.message || 'Failed to fetch route', type: 'negative' })
+  } catch (err: unknown) {
+    $q.notify({ message: (err as { message?: string }).message || 'Failed to fetch route', type: 'negative' })
   }
 })
 
 const updateRoute = async () => {
   try {
-    await routeApi.update(route.params.id as string, {
-      ...form.value,
-      holderTypes: form.value.holdTypes,
-    })
+    if (!routeData.value) return
+    const updatedRoute: Route = {
+      ...routeData.value,
+      gymId: form.value.gymId,
+      name: form.value.name,
+      difficulty: {
+        value: form.value.difficulty.value,
+        scale: form.value.difficulty.scale as 'v' | 'font' | 'custom',
+      },
+      holdColor: form.value.holdColor,
+      holdTypes: form.value.holdTypes,
+      setterId: form.value.setterId,
+      wall: form.value.wall,
+      archived: form.value.archived,
+      archivedAt: form.value.archivedAt,
+      images: form.value.images,
+      createdAt: form.value.createdAt,
+      updatedAt: form.value.updatedAt,
+    }
+    await routeApi.update(route.params.id as string, updatedRoute)
     $q.notify({ message: 'Route updated successfully', type: 'positive' })
-    router.push(`/routes/${route.params.id}`)
-  } catch (err: any) {
-    $q.notify({ message: err.message || 'Failed to update route', type: 'negative' })
+    await router.push(`/routes/${String(route.params.id)}`)
+  } catch (err: unknown) {
+    $q.notify({ message: (err as { message?: string }).message || 'Failed to update route', type: 'negative' })
   }
 }
 </script>

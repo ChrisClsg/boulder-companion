@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { authApi } from 'boot/axios'
+import { authApi } from 'src/boot/axios'
 import type { User } from 'src/types'
 
 export const useAuthStore = defineStore('auth', {
@@ -11,11 +11,11 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     hasRole: (state) => (role: string) => {
-      if (!this.user) return false
+      if (!state.user) return false
       return (
-        this.user.role === role ||
-        (role === 'ADMIN' && this.user.role !== 'CLIMBER') ||
-        (role === 'ROUTE_SETTER' && this.user.role === 'ROUTE_SETTER')
+        state.user.role === role ||
+        (role === 'ADMIN' && state.user.role !== 'CLIMBER') ||
+        (role === 'ROUTE_SETTER' && state.user.role === 'ROUTE_SETTER')
       )
     },
     isClimber: (state) => state.user?.role === 'CLIMBER',
@@ -38,7 +38,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async login(callbackUrl: string) {
+    login(callbackUrl: string) {
       authApi.login(callbackUrl)
     },
 

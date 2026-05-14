@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import type { Route } from 'src/types'
 
-const props = defineProps<{ route: Route }>()
+defineProps<{ route: Route }>()
 </script>
 
 <style scoped>

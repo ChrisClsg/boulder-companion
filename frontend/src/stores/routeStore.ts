@@ -22,8 +22,8 @@ export const useRouteStore = defineStore('routes', {
       try {
         const response = await routeApi.getByGym(gymId)
         this.routes = response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to fetch routes'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to fetch routes'
         throw error
       } finally {
         this.isLoading = false
@@ -35,9 +35,9 @@ export const useRouteStore = defineStore('routes', {
       this.error = null
       try {
         const response = await routeApi.getById(id)
-        this.currentRoute = response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to fetch route'
+        this.currentRoute = response.data as Route
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to fetch route'
         throw error
       } finally {
         this.isLoading = false
@@ -50,8 +50,8 @@ export const useRouteStore = defineStore('routes', {
         const response = await routeApi.create(route)
         this.routes.unshift(response.data)
         return response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to create route'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to create route'
         throw error
       }
     },
@@ -65,8 +65,8 @@ export const useRouteStore = defineStore('routes', {
           this.routes[index] = response.data
         }
         return response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to update route'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to update route'
         throw error
       }
     },
@@ -76,8 +76,8 @@ export const useRouteStore = defineStore('routes', {
       try {
         await routeApi.delete(id)
         this.routes = this.routes.filter(r => r.id !== id)
-      } catch (error: any) {
-        this.error = error.message || 'Failed to delete route'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to delete route'
         throw error
       }
     },
@@ -91,8 +91,8 @@ export const useRouteStore = defineStore('routes', {
           this.routes[index] = response.data
         }
         return response.data
-      } catch (error: any) {
-        this.error = error.message || 'Failed to archive route'
+      } catch (error: unknown) {
+        this.error = (error as { message?: string }).message || 'Failed to archive route'
         throw error
       }
     },

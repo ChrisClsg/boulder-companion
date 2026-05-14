@@ -1,4 +1,4 @@
-import { api, authApi } from 'boot/axios'
+import { authApi } from 'src/boot/axios'
 import { useAuthStore } from 'stores/authStore'
 import type { User } from 'src/types'
 
@@ -12,7 +12,7 @@ export const authService = {
     return store.user!
   },
 
-  async login(): Promise<void> {
+  login(): void {
     const host = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin
     authApi.login(`${host}/oauth2/authorization/github`)
   },

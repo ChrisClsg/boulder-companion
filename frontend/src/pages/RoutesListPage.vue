@@ -29,7 +29,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { routeApi } from 'boot/axios'
 import { useRouteStore } from 'stores/routeStore'
 import type { Route } from 'src/types'
 
@@ -43,10 +42,10 @@ const fetchRoutes = async () => {
   loading.value = true
   error.value = null
   try {
-    const data = await routeApi.getByGym('')
-    routes.value = data
-  } catch (err: any) {
-    error.value = err.message || 'Failed to fetch routes'
+    await routeStore.fetchRoutesByGym('')
+    routes.value = routeStore.routes
+  } catch (err: unknown) {
+    error.value = (err as { message?: string }).message || 'Failed to fetch routes'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false

@@ -107,7 +107,7 @@ const createGym = async () => {
       adminId: 'current-user-id', // Would need to be fetched from auth
     })
     $q.notify({ message: 'Gym created successfully', type: 'positive' })
-    router.push('/gyms')
+    await router.push('/gyms')
   } catch (err: unknown) {
     $q.notify({ message: (err as Error).message || 'Failed to create gym', type: 'negative' })
   }

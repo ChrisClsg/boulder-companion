@@ -65,6 +65,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { routeApi } from 'boot/axios'
+import type { Route } from 'src/types'
 
 const router = useRouter()
 const $q = useQuasar()
@@ -89,16 +90,29 @@ const form = ref({
 
 const createRoute = async () => {
   try {
-    await routeApi.create({
-      ...form.value,
-      holderTypes: form.value.holdTypes,
+    const newId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9)
+    const routeData: Omit<Route, 'id'> = {
+      gymId: form.value.gymId,
+      name: form.value.name,
+      difficulty: {
+        value: form.value.difficulty.value,
+        scale: form.value.difficulty.scale as 'v' | 'font' | 'custom',
+      },
+      holdColor: form.value.holdColor,
+      holdTypes: form.value.holdTypes,
+      setterId: form.value.setterId,
+      wall: form.value.wall,
+      archived: false,
+      archivedAt: '',
+      images: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    })
+    }
+    await routeApi.create({ id: newId, ...routeData })
     $q.notify({ message: 'Route created successfully', type: 'positive' })
-    router.push('/routes')
-  } catch (err: any) {
-    $q.notify({ message: err.message || 'Failed to create route', type: 'negative' })
+    await router.push('/routes')
+  } catch (err: unknown) {
+    $q.notify({ message: (err as { message?: string }).message || 'Failed to create route', type: 'negative' })
   }
 }
 </script>

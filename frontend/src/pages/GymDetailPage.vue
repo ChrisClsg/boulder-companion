@@ -69,10 +69,10 @@ const fetchGym = async () => {
   loading.value = true
   error.value = null
   try {
-    const data = await gymApi.getById(route.params.id as string)
-    gym.value = data
-    } catch (err: unknown) {
-    error.value = (err as Error).message || 'Failed to fetch gym'
+    const gymData = await gymApi.getById(route.params.id as string)
+    gym.value = gymData
+  } catch (err: unknown) {
+    error.value = (err as { message?: string }).message || 'Failed to fetch gym'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false
@@ -83,10 +83,10 @@ const fetchRoutes = async () => {
   loading.value = true
   error.value = null
   try {
-    const data = await routeApi.getByGym(route.params.id as string)
-    routes.value = data
+    const routesData = await routeApi.getByGym(gym.value?.id || '')
+    routes.value = routesData.data as Route[]
   } catch (err: unknown) {
-    error.value = (err as Error).message || 'Failed to fetch routes'
+    error.value = (err as { message?: string }).message || 'Failed to fetch routes'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false
@@ -97,7 +97,7 @@ onMounted(async () => {
   if (authStore.isAuthenticated) {
     await Promise.all([fetchGym(), fetchRoutes()])
   } else {
-    router.push('/')
+    await router.push('/')
   }
 })
 </script>

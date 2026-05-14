@@ -1,4 +1,3 @@
-import { api, historyApi } from 'boot/axios'
 import { useHistoryStore } from 'stores/historyStore'
 import type { ClimbingHistory } from 'src/types'
 

@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { openURL, useQuasar } from 'quasar'
 import { useAuthStore } from 'stores/authStore'
-import { useGymStore } from 'stores/gymStore'
+import { useFavoriteStore } from 'stores/favoriteStore'
 import { favoriteApi } from 'boot/axios'
 import type { Gym } from 'src/types'
 import { computed } from 'vue'
@@ -60,7 +60,7 @@ import { getErrorMessage } from 'src/utils/errors'
 const props = defineProps<{ gym: Gym }>()
 const $q = useQuasar()
 const authStore = useAuthStore()
-const favoriteStore = useGymStore()
+const favoriteStore = useFavoriteStore()
 
 const isFavorite = computed(() => {
   return favoriteStore.gyms.some((g: Gym) => g.id === props.gym.id)

@@ -83,8 +83,8 @@ const fetchHistory = async () => {
   loading.value = true
   error.value = null
   try {
-    const data = await historyApi.getAll()
-    history.value = data
+    const response = await historyApi.getAll()
+    history.value = response.data as ClimbingHistory[]
   } catch (err: unknown) {
     error.value = (err as Error).message || 'Failed to fetch history'
     $q.notify({ message: error.value, type: 'negative' })

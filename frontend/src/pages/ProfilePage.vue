@@ -47,18 +47,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
-import { authApi, historyApi } from 'boot/axios'
 import { useAuthStore } from 'stores/authStore'
 import { useHistoryStore } from 'stores/historyStore'
-import type { User, ClimbingHistory } from 'src/types'
+import { useFavoriteStore } from 'stores/favoriteStore'
+import type { User } from 'src/types'
 
 const $q = useQuasar()
 const authStore = useAuthStore()
 const historyStore = useHistoryStore()
+const favoriteStore = useFavoriteStore()
 const user = ref<User | null>(null)
-const history = ref<ClimbingHistory[]>([])
+const history = computed(() => historyStore.history)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -85,10 +86,11 @@ const fetchUser = async () => {
   loading.value = true
   error.value = null
   try {
-    const data = await authApi.getCurrentUser()
-    user.value = data
-  } catch (err: any) {
-    error.value = err.message || 'Failed to fetch user'
+    await authStore.fetchUser()
+    user.value = authStore.user
+    await favoriteStore.fetchGyms()
+  } catch (err: unknown) {
+    error.value = (err as { message?: string }).message || 'Failed to fetch user'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false
@@ -99,10 +101,9 @@ const fetchHistory = async () => {
   loading.value = true
   error.value = null
   try {
-    await historyApi.getAll({ userId: user.value?.id })
-    history.value = data
-  } catch (err: any) {
-    error.value = err.message || 'Failed to fetch history'
+    await historyStore.fetchHistory(user.value?.id)
+  } catch (err: unknown) {
+    error.value = (err as { message?: string }).message || 'Failed to fetch history'
     $q.notify({ message: error.value, type: 'negative' })
   } finally {
     loading.value = false

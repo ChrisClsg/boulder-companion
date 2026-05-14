@@ -136,9 +136,9 @@ const updateGym = async () => {
       adminId: gym.value?.adminId || '',
     })
     $q.notify({ message: 'Gym updated successfully', type: 'positive' })
-    router.push(`/gyms/${route.params.id}`)
-  } catch (err: any) {
-    $q.notify({ message: err.message || 'Failed to update gym', type: 'negative' })
+    await router.push(`/gyms/${String(route.params.id)}`)
+  } catch (err: unknown) {
+    $q.notify({ message: (err as { message?: string }).message || 'Failed to update gym', type: 'negative' })
   }
 }
 </script>
