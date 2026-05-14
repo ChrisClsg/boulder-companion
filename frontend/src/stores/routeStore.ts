@@ -59,7 +59,7 @@ export const useRouteStore = defineStore('routes', {
     async updateRoute(id: string, updates: Partial<Route>) {
       this.error = null
       try {
-        const response = await routeApi.update(id, { ...this.getRoute(id), ...updates })
+        const response = await routeApi.update(id, updates)
         const index = this.routes.findIndex(r => r.id === id)
         if (index !== -1) {
           this.routes[index] = response.data

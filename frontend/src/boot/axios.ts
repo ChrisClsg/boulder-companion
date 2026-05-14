@@ -28,7 +28,7 @@ export const authApi = {
 }
 
 export type CreateGymPayload = Omit<Gym, 'id' | 'createdAt' | 'updatedAt'>
-export type UpdateGymPayload = Partial<Gym>
+export type UpdateGymPayload = Omit<Partial<Gym>, 'id' | 'createdAt' | 'updatedAt'>
 
 export const gymApi = {
   async getAll(): Promise<Gym[]> {
@@ -61,25 +61,27 @@ export const gymApi = {
   },
 }
 
+export type UpdateRoutePayload = Partial<Omit<Route, 'id' | 'createdAt' | 'updatedAt'>>
 export const routeApi = {
   getByGym: (gymId: string) => api.get(`/routes?gymId=${gymId}`),
   getById: (id: string) => api.get(`/routes/${id}`),
   getByArchived: (gymId: string) => api.get(`/routes/${gymId}/archived`),
   create: (route: Route) => api.post('/routes', route),
-  update: (id: string, route: Route) => api.put(`/routes/${id}`, route),
+  update: (id: string, route: UpdateRoutePayload) => api.put(`/routes/${id}`, route),
   delete: (id: string) => api.delete(`/routes/${id}`),
   archive: (id: string) => api.post(`/routes/${id}/archive`),
   bulkCreate: (request: Route[]) => api.post('/routes/bulk', request),
 }
 
+export type UpdateHistoryPayload = Partial<Omit<ClimbingHistory, 'id' | 'createdAt'>>
 export const historyApi = {
-  getAll: (params?: ClimbingHistory) => api.get('/history', { params }),
+  getAll: (params?: Record<string, string>) => api.get('/history', { params }),
   getByUser: (userId: string) => api.get('/history', { params: { userId } }),
   getByGym: (gymId: string) => api.get('/history', { params: { gymId } }),
   getById: (id: string) => api.get(`/history/${id}`),
   getByRoute: (routeId: string) => api.get('/history', { params: { routeId } }),
   create: (history: ClimbingHistory) => api.post('/history', history),
-  update: (id: string, history: ClimbingHistory) => api.put(`/history/${id}`, history),
+  update: (id: string, history: UpdateHistoryPayload) => api.put(`/history/${id}`, history),
   delete: (id: string) => api.delete(`/history/${id}`),
   getToppedByUser: (userId: string) => api.get('/history/topped', { params: { userId } }),
   getToppedByGym: (gymId: string) => api.get('/history/topped', { params: { gymId } }),

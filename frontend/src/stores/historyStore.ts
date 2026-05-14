@@ -70,7 +70,7 @@ export const useHistoryStore = defineStore('history', {
     async updateHistory(id: string, updates: Partial<ClimbingHistory>) {
       this.error = null
       try {
-        const response = await historyApi.update(id, { ...this.getHistory(id), ...updates })
+        const response = await historyApi.update(id, updates)
         const index = this.history.findIndex(h => h.id === id)
         if (index !== -1) {
           this.history[index] = response.data
