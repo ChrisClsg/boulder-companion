@@ -59,10 +59,14 @@ import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/authStore'
 import { gymApi, authApi } from 'src/boot/axios'
+import GymCard from 'src/components/GymCard.vue'
 import type { Gym } from 'src/types'
+import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const authStore = useAuthStore()
+const router = useRouter()
+
 const gyms = ref<Gym[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -86,9 +90,9 @@ const login = () => {
   authApi.login(`${host}/oauth2/authorization/github`)
 }
 
-const logout = () => {
-  authStore.clearUser()
-  window.location.href = '/logout'
+const logout = async () => {
+  await authStore.logout()
+  await router.push('/')
 }
 
 onMounted(async () => {

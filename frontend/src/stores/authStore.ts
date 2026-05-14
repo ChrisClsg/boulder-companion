@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { authApi } from 'src/boot/axios'
+import { authApi, oauthApi } from 'src/boot/axios'
 import type { User } from 'src/types'
 
 export const useAuthStore = defineStore('auth', {
@@ -7,45 +7,72 @@ export const useAuthStore = defineStore('auth', {
     user: null as User | null,
     isAuthenticated: false,
     isLoading: false,
+    hasFetchedUser: false,
   }),
 
   getters: {
-    hasRole: (state) => (role: string) => {
-      if (!state.user) return false
-      return (
-        state.user.role === role ||
-        (role === 'ADMIN' && state.user.role !== 'CLIMBER') ||
-        (role === 'ROUTE_SETTER' && state.user.role === 'ROUTE_SETTER')
-      )
+    hasRole: (state) => {
+      return (role: string) => state.user?.role === role
     },
+
     isClimber: (state) => state.user?.role === 'CLIMBER',
     isAdmin: (state) => state.user?.role === 'GYM_ADMIN',
     isRouteSetter: (state) => state.user?.role === 'ROUTE_SETTER',
   },
 
   actions: {
-    async fetchUser() {
+    async initAuth() {
       this.isLoading = true
+
       try {
-        const response = await authApi.getCurrentUser()
-        this.user = response.data as User
-        this.isAuthenticated = true
-      } catch (error) {
-        console.error('Failed to fetch user:', error)
-        this.clearUser()
+        await authApi.getCsrfToken()
+        await this.fetchUser()
       } finally {
         this.isLoading = false
       }
     },
 
-    login(callbackUrl: string) {
-      authApi.login(callbackUrl)
+    async fetchUser() {
+      if (this.hasFetchedUser) {
+        return this.user
+      }
+
+      try {
+        const response = await authApi.getCurrentUser()
+
+        this.user = response.data as User
+        this.isAuthenticated = true
+        this.hasFetchedUser = true
+
+        return this.user
+      } catch {
+        this.clearUser()
+        this.hasFetchedUser = true
+
+        return null
+      }
     },
 
-    logout() {
-      this.user = null
-      this.isAuthenticated = false
-      authApi.logout()
+    async refreshUser() {
+      this.hasFetchedUser = false
+      return this.fetchUser()
+    },
+
+    loginWithGithub() {
+      oauthApi.loginWithGithub()
+    },
+
+    async logout() {
+      this.isLoading = true
+
+      try {
+        await authApi.getCsrfToken()
+        await authApi.logout()
+      } finally {
+        this.clearUser()
+        this.hasFetchedUser = true
+        this.isLoading = false
+      }
     },
 
     clearUser() {

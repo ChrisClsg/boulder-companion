@@ -9,13 +9,30 @@
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
+          :disable="!isAuthenticated"
         />
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        <q-toolbar-title>Boulder Companion</q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn
+          flat
+          dense
+          round
+          icon="account_circle"
+          aria-label="Account"
+          @click="goToProfile"
+          v-if="isAuthenticated"
+        />
+
+        <q-btn
+          flat
+          dense
+          round
+          icon="logout"
+          aria-label="Logout"
+          @click="handleLogout"
+          v-if="isAuthenticated"
+        />
       </q-toolbar>
     </q-header>
 
@@ -23,20 +40,9 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      v-if="isAuthenticated"
     >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
+      <AppDrawerLinks />
     </q-drawer>
 
     <q-page-container>
@@ -46,57 +52,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from 'src/stores/authStore'
+import AppDrawerLinks from 'components/AppDrawerLinks.vue'
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
+const router = useRouter()
+const authStore = useAuthStore()
 
-const leftDrawerOpen = ref(false);
+const isAuthenticated = ref(authStore.isAuthenticated)
 
-function toggleLeftDrawer () {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
+// Watch auth store changes
+authStore.$subscribe((mutation, state) => {
+  isAuthenticated.value = state.isAuthenticated
+})
+
+const leftDrawerOpen = ref(false)
+
+function toggleLeftDrawer() {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+function goToProfile() {
+  void router.push('/profile')
+  leftDrawerOpen.value = false
+}
+
+async function handleLogout() {
+  await authStore.logout()
+  await router.push('/')
 }
 </script>

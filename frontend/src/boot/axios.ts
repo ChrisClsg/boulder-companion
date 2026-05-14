@@ -2,9 +2,15 @@ import { defineBoot } from '#q-app/wrappers'
 import axios from 'axios'
 import type { ClimbingHistory, Gym, Route } from 'src/types'
 
+const backendUrl =
+  window.location.host === 'localhost:5173'
+    ? 'http://localhost:8080'
+    : window.location.origin
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api',
+  baseURL: backendUrl + '/api',
   withCredentials: true,
+  withXSRFToken: true,
   xsrfCookieName: 'XSRF-TOKEN',
   xsrfHeaderName: 'X-XSRF-TOKEN',
 })
@@ -20,11 +26,15 @@ export const authApi = {
   login: (callbackUrl: string) => {
     window.location.href = callbackUrl
   },
-  logout: () => {
-    window.location.href = '/logout'
-  },
   getCurrentUser: () => api.get('/auth/me'),
-  getOAuth2User: () => api.get('/auth/oauth2-user'),
+  getCsrfToken: () => api.get('/auth/csrf'),
+  logout: () => api.post('/auth/logout'),
+}
+
+export const oauthApi = {
+  loginWithGithub: () => {
+    window.location.href = `${backendUrl}/oauth2/authorization/github`
+  },
 }
 
 export type CreateGymPayload = Omit<Gym, 'id' | 'createdAt' | 'updatedAt'>
