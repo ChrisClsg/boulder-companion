@@ -76,8 +76,8 @@ public class ClimbingHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<ClimbingHistoryDto> getHistoryByRouteId(String gymId) {
-        return climbingHistoryRepository.findByGymId(gymId).stream()
+    public List<ClimbingHistoryDto> getHistoryByRouteId(String routeId) {
+        return climbingHistoryRepository.findByRouteId(routeId).stream()
             .map(ClimbingHistoryDto::fromHistory)
             .toList();
     }

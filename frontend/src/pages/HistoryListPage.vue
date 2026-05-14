@@ -46,6 +46,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { historyApi, gymApi } from 'boot/axios'
+import HistoryCard from 'src/components/HistoryCard.vue'
 import type { ClimbingHistory, Gym } from 'src/types'
 
 const $q = useQuasar()
@@ -73,7 +74,7 @@ const fetchGyms = async () => {
   try {
     const data = await gymApi.getAll()
     gyms.value = data
-    gymOptions.value = data.map(g => g.id)
+    gymOptions.value = data.map(g => g.name)
   } catch (err: unknown) {
     $q.notify({ message: (err as Error).message || 'Failed to fetch gyms', type: 'negative' })
   }

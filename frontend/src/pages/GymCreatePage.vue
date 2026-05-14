@@ -75,13 +75,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { gymApi } from 'boot/axios'
+import { useAuthStore } from 'src/stores/authStore'
 
 const router = useRouter()
 const $q = useQuasar()
+const authStore = useAuthStore()
 
 const form = ref({
   name: '',
@@ -100,16 +102,20 @@ const form = ref({
   },
 })
 
+onMounted(async () => {
+  await authStore.fetchUser()
+})
+
 const createGym = async () => {
   try {
     await gymApi.create({
       ...form.value,
-      adminId: 'current-user-id', // Would need to be fetched from auth
+      adminId: authStore.user?.id || '',
     })
     $q.notify({ message: 'Gym created successfully', type: 'positive' })
     await router.push('/gyms')
   } catch (err: unknown) {
-    $q.notify({ message: (err as Error).message || 'Failed to create gym', type: 'negative' })
+    $q.notify({ message: (err as { message?: string }).message || 'Failed to create gym', type: 'negative' })
   }
 }
 </script>

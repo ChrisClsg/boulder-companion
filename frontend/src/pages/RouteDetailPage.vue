@@ -52,6 +52,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { routeApi, historyApi } from 'boot/axios'
 import { useAuthStore } from 'stores/authStore'
+import HistoryCard from 'src/components/HistoryCard.vue'
 import type { Route, ClimbingHistory } from 'src/types'
 
 const route = useRoute()

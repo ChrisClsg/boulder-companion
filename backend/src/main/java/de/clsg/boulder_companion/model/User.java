@@ -3,12 +3,14 @@ package de.clsg.boulder_companion.model;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Builder;
 
 import java.time.Instant;
 import java.util.List;
 
+@Document("users")
 @Builder
 public record User(
     @Id String id,

@@ -30,6 +30,7 @@
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouteStore } from 'stores/routeStore'
+import RouteCard from 'src/components/RouteCard.vue'
 import type { Route } from 'src/types'
 
 const $q = useQuasar()

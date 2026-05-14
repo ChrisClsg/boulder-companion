@@ -3,8 +3,11 @@ package de.clsg.boulder_companion.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.Instant;
 
+@Document("climbing_histories")
 public record ClimbingHistory(
     @Id String id,
     @Indexed String userId,
