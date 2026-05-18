@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { historyApi, gymApi } from 'boot/axios'
+import { historyApi, gymApi } from 'src/api'
 import HistoryCard from 'src/components/HistoryCard.vue'
 import type { ClimbingHistory, Gym } from 'src/types'
 
@@ -85,7 +85,7 @@ const fetchHistory = async () => {
   error.value = null
   try {
     const response = await historyApi.getAll()
-    history.value = response.data as ClimbingHistory[]
+    history.value = response.data
   } catch (err: unknown) {
     error.value = (err as Error).message || 'Failed to fetch history'
     $q.notify({ message: error.value, type: 'negative' })

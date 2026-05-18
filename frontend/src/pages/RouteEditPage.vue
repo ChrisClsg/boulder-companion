@@ -63,7 +63,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { routeApi } from 'boot/axios'
+import { routeApi } from 'src/api'
 import type { Route, Image } from 'src/types'
 
 const route = useRoute()
@@ -93,7 +93,7 @@ onMounted(async () => {
   if (routeData.value) return
   try {
     const response = await routeApi.getById(route.params.id as string)
-    const fetchedRoute = response.data as Route
+    const fetchedRoute = response.data
     routeData.value = fetchedRoute
     form.value = {
       gymId: fetchedRoute.gymId,

@@ -78,7 +78,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { gymApi } from 'boot/axios'
+import { gymApi } from 'src/api'
 import { useAuthStore } from 'src/stores/authStore'
 
 const router = useRouter()

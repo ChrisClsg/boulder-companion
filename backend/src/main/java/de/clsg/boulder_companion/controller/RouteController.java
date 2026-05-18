@@ -37,12 +37,12 @@ public class RouteController {
         return ResponseEntity.ok(routeService.getRouteById(id));
     }
 
-    @GetMapping("/{gymId}/archived")
-    public ResponseEntity<List<RouteDto>> getArchivedRoutes(
-            @PathVariable String gymId,
-            @AuthenticationPrincipal OAuth2User user) {
-        return ResponseEntity.ok(routeService.getRoutesByGymIdAndArchived(gymId, true));
-    }
+    // @GetMapping("/{gymId}/archived")
+    // public ResponseEntity<List<RouteDto>> getArchivedRoutes(
+    //         @PathVariable String gymId,
+    //         @AuthenticationPrincipal OAuth2User user) {
+    //     return ResponseEntity.ok(routeService.getRoutesByGymIdAndArchived(gymId, true));
+    // }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('ROUTE_SETTER')")

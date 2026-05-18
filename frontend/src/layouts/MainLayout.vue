@@ -33,6 +33,16 @@
           @click="handleLogout"
           v-if="isAuthenticated"
         />
+
+        <q-btn
+          flat
+          dense
+          round
+          icon="login"
+          aria-label="Login"
+          @click="authStore.loginWithGithub"
+          v-if="!isAuthenticated"
+        />
       </q-toolbar>
     </q-header>
 

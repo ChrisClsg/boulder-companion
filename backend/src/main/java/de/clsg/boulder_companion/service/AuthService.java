@@ -1,55 +1,76 @@
 package de.clsg.boulder_companion.service;
 
+import de.clsg.boulder_companion.dto.UserDto;
 import de.clsg.boulder_companion.model.User;
 import de.clsg.boulder_companion.repository.UserRepository;
-import de.clsg.boulder_companion.dto.UserDto;
-import org.springframework.stereotype.Service;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.Map;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
+import java.util.List;
 
 @Service
 public class AuthService {
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    public AuthService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+  public AuthService(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
+
+  public UserDto getOrCreateCurrentUser(OAuth2User principal) {
+    User user = getOrCreateUser(principal);
+    return UserDto.fromUser(user);
+  }
+
+  public User getOrCreateUser(OAuth2User principal) {
+    if (principal == null) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
     }
 
-    public UserDto authenticateUser(OAuth2User user) {
-        String githubId = (String) user.getAttribute("login");
-        String name = (String) user.getAttribute("name");
-        String email = (String) user.getAttribute("email");
+    String githubId = getRequiredAttribute(principal, "id");
 
-        User savedUser = userRepository.findByGithubId(githubId)
-            .map(u -> u.withRole(User.Role.CLIMBER))
-            .orElseGet(() -> User.builder()
-                .githubId(githubId)
-                .name(name)
-                .email(email)
-                .role(User.Role.CLIMBER)
-                .build());
+    return userRepository.findByGithubId(githubId)
+        .orElseGet(() -> createUserFromGithub(principal, githubId));
+  }
 
-        return UserDto.fromUser(savedUser);
+  private User createUserFromGithub(OAuth2User principal, String githubId) {
+    String login = getNullableAttribute(principal, "login");
+    String name = getNullableAttribute(principal, "name");
+    String email = getNullableAttribute(principal, "email");
+
+    User newUser = new User(
+        null,
+        githubId,
+        name != null && !name.isBlank() ? name : login,
+        email,
+        User.Role.CLIMBER,
+        List.of(),
+        List.of(),
+        List.of(),
+        null
+    );
+
+    return userRepository.save(newUser);
+  }
+
+  private String getRequiredAttribute(OAuth2User principal, String attributeName) {
+    Object value = principal.getAttribute(attributeName);
+
+    if (value == null) {
+      throw new ResponseStatusException(
+          HttpStatus.UNAUTHORIZED,
+          "Missing OAuth2 attribute: " + attributeName
+      );
     }
 
-    public User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
-            return userRepository.findByGithubId((String) oAuth2User.getAttribute("login"))
-                .orElseThrow();
-        }
-        return null;
-    }
+    return value.toString();
+  }
 
-    public Map<String, Object> getOAuth2User() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
-            return oAuth2User.getAttributes();
-        }
-        return null;
-    }
+  private String getNullableAttribute(OAuth2User principal, String attributeName) {
+    Object value = principal.getAttribute(attributeName);
+    return value != null ? value.toString() : null;
+  }
 }

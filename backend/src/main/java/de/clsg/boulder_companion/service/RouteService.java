@@ -31,13 +31,6 @@ public class RouteService {
         return routeRepository.findById(id).map(RouteDto::fromRoute);
     }
 
-    @Transactional(readOnly = true)
-    public List<RouteDto> getRoutesByGymIdAndArchived(String gymId, boolean archived) {
-        return routeRepository.findByGymIdAndArchived(gymId, archived).stream()
-            .map(RouteDto::fromRoute)
-            .toList();
-    }
-
     @Transactional
     public RouteDto createRoute(RouteDto routeDto) {
         Route route = routeDto.toRoute();

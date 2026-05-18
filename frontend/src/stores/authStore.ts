@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { authApi, oauthApi } from 'src/boot/axios'
+import { authApi } from 'src/api/auth'
+import { oauthApi } from 'src/api/oauth'
 import type { User } from 'src/types'
 
 export const useAuthStore = defineStore('auth', {
@@ -40,7 +41,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await authApi.getCurrentUser()
 
-        this.user = response.data as User
+        this.user = response.data
         this.isAuthenticated = true
         this.hasFetchedUser = true
 

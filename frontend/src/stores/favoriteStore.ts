@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { favoriteApi } from 'src/boot/axios'
+import { favoriteApi } from 'src/api'
 import type { Gym } from 'src/types'
 
 export const useFavoriteStore = defineStore('favorites', {

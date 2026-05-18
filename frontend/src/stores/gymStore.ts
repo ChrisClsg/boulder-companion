@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { gymApi, type CreateGymPayload, type UpdateGymPayload } from 'boot/axios'
+import { gymApi, type CreateGymPayload, type UpdateGymPayload } from 'src/api'
 import type { Gym } from 'src/types'
 import { getErrorMessage } from 'src/utils/errors'
 

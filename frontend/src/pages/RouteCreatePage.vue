@@ -64,7 +64,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { routeApi } from 'boot/axios'
+import { routeApi } from 'src/api'
 import type { Route } from 'src/types'
 
 const router = useRouter()

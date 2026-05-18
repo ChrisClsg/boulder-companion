@@ -3,6 +3,7 @@ package de.clsg.boulder_companion.dto;
 import de.clsg.boulder_companion.model.User;
 
 import java.util.List;
+
 public record UserDto(
     String id,
     String githubId,
@@ -13,24 +14,21 @@ public record UserDto(
     List<String> gymAdminFor,
     List<String> routeSetterFor
 ) {
-    public static UserDto fromUser(User user) {
-        return new UserDto(
-            user.id(),
-            user.githubId(),
-            user.name(),
-            user.email(),
-            user.role(),
-            user.favoriteGyms(),
-            user.gymAdminFor(),
-            user.routeSetterFor()
-        );
-    }
 
-    public User toUser() {
-        return new User(id, githubId, name, email, role,
-            favoriteGyms != null ? favoriteGyms : List.of(),
-            gymAdminFor != null ? gymAdminFor : List.of(),
-            routeSetterFor != null ? routeSetterFor : List.of(),
-            null);
-    }
+  public static UserDto fromUser(User user) {
+    return new UserDto(
+        user.id(),
+        user.githubId(),
+        user.name(),
+        user.email(),
+        user.role(),
+        safeList(user.favoriteGyms()),
+        safeList(user.gymAdminFor()),
+        safeList(user.routeSetterFor())
+    );
+  }
+
+  private static List<String> safeList(List<String> list) {
+    return list == null ? List.of() : List.copyOf(list);
+  }
 }

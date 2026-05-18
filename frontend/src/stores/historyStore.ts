@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { historyApi } from 'boot/axios'
+import { historyApi } from 'src/api'
 import type { ClimbingHistory } from 'src/types'
 
 export const useHistoryStore = defineStore('history', {
@@ -46,7 +46,7 @@ export const useHistoryStore = defineStore('history', {
       this.error = null
       try {
         const response = await historyApi.getById(id)
-        this.currentHistory = response.data as ClimbingHistory
+        this.currentHistory = response.data
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to fetch history'
         throw error

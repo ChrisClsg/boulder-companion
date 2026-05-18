@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { routeApi } from 'boot/axios'
+import { routeApi } from 'src/api'
 import type { Route } from 'src/types'
 
 export const useRouteStore = defineStore('routes', {
@@ -35,7 +35,7 @@ export const useRouteStore = defineStore('routes', {
       this.error = null
       try {
         const response = await routeApi.getById(id)
-        this.currentRoute = response.data as Route
+        this.currentRoute = response.data
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to fetch route'
         throw error
