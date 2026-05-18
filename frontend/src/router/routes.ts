@@ -40,27 +40,15 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/RoutesListPage.vue'),
       },
       {
-        path: 'routes/new',
-        name: 'RouteCreate',
-        component: () => import('pages/RouteCreatePage.vue'),
-      },
-      {
         path: 'routes/:id',
         name: 'RouteDetail',
         component: () => import('pages/RouteDetailPage.vue'),
         props: true,
       },
       {
-        path: 'routes/:id/edit',
-        name: 'RouteEdit',
-        component: () => import('pages/RouteEditPage.vue'),
-        props: true,
-      },
-
-      {
-        path: 'history',
-        name: 'HistoryList',
-        component: () => import('pages/HistoryListPage.vue'),
+        path: 'climb-logs',
+        name: 'ClimbLogs',
+        component: () => import('pages/ClimbLogsPage.vue'),
       },
 
       {

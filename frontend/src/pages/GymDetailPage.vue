@@ -189,7 +189,7 @@ import { useQuasar } from 'quasar'
 import { gymApi, routeApi } from 'src/api'
 import { useAuthStore } from 'stores/authStore'
 import CardGrid from 'src/components/CardGrid.vue'
-import RouteCard from 'src/components/RouteCard.vue'
+import RouteCard from 'src/components/routes/RouteCard.vue'
 import type { Gym, Route as ClimbingRoute } from 'src/types'
 
 type WallRouteGroup = {

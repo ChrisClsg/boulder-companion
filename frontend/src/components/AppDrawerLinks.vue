@@ -30,8 +30,8 @@ const linksList: AppDrawerLinkProps[] = [
     icon: 'route',
   },
   {
-    title: 'History',
-    to: '/history',
+    title: 'Climb Logs',
+    to: '/climb-logs',
     icon: 'history',
   },
   {

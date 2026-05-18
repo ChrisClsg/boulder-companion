@@ -32,7 +32,6 @@
         <h5 class="text-h6">Climbing History</h5>
         <div class="text-body1">Total attempts: {{ history.length }}</div>
         <div class="text-body1">Topped routes: {{ toppedCount }}</div>
-        <div class="text-body1">Average rating: {{ averageRating }} / 5</div>
       </div>
 
       <div class="q-mt-md">
@@ -50,27 +49,21 @@
 import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'stores/authStore'
-import { useHistoryStore } from 'stores/historyStore'
+import { useClimbLogStore } from 'stores/climbLogStore'
 import { useFavoriteStore } from 'stores/favoriteStore'
 import type { User } from 'src/types'
 
 const $q = useQuasar()
 const authStore = useAuthStore()
-const historyStore = useHistoryStore()
+const climbLogStore = useClimbLogStore()
 const favoriteStore = useFavoriteStore()
 const user = ref<User | null>(null)
-const history = computed(() => historyStore.history)
+const history = computed(() => climbLogStore.logs)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
 const toppedCount = computed(() => {
   return history.value.filter(h => h.topped).length
-})
-
-const averageRating = computed(() => {
-  if (history.value.length === 0) return 0
-  const sum = history.value.reduce((acc, h) => acc + h.userRating, 0)
-  return Math.round((sum / history.value.length) * 10) / 10
 })
 
 const formatRole = (role: string): string => {
@@ -101,7 +94,7 @@ const fetchHistory = async () => {
   loading.value = true
   error.value = null
   try {
-    await historyStore.fetchHistory(user.value?.id)
+    await climbLogStore.fetchMyLogs()
   } catch (err: unknown) {
     error.value = (err as { message?: string }).message || 'Failed to fetch history'
     $q.notify({ message: error.value, type: 'negative' })

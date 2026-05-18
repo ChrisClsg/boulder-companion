@@ -36,16 +36,18 @@ export interface Route {
   id: string
   gymId: string
   name: string
-  difficulty: Difficulty
+  wall: string
+  difficulty: {
+    value: string
+    scale: string
+  }
   holdColor: string
   holdTypes: string[]
   setterId: string
-  wall: string
-  archived: boolean
-  archivedAt: string
-  images: Image[]
-  createdAt: string
-  updatedAt: string
+  images?: {
+    url: string
+    caption?: string
+  }[]
 }
 
 export interface Difficulty {
@@ -58,21 +60,64 @@ export interface Image {
   caption: string
 }
 
-export interface ClimbingHistory {
-  id: string
-  userId: string
-  gymId: string
-  routeId: string
-  topped: boolean
-  tries: number
-  userRating: number
-  difficultyFeedback: DifficultyFeedback
-  createdAt: string
-}
-
 export type DifficultyFeedback =
   | 'MUCH_HARDER'
   | 'HARDER'
   | 'ABOUT_RIGHT'
   | 'EASIER'
   | 'MUCH_EASIER'
+
+export type ClimbLog = {
+  id: string
+  userId: string
+  gymId: string
+  routeId: string
+  sessionId: string | null
+  topped: boolean
+  flashed: boolean
+  attempts: number
+  climbedAt: string
+  createdAt: string
+}
+
+export type CreateClimbLogPayload = {
+  gymId: string
+  routeId: string
+  sessionId?: string | null
+  topped: boolean
+  flashed: boolean
+  attempts: number
+  climbedAt: string
+}
+
+export type UpdateClimbLogPayload = {
+  sessionId?: string | null
+  topped?: boolean
+  flashed?: boolean
+  attempts?: number
+  climbedAt?: string
+}
+
+export type RouteFeedback = {
+  id: string
+  userId: string
+  routeId: string
+  gymId: string
+  userRating: number
+  difficultyFeedback: DifficultyFeedback
+  createdAt: string
+  updatedAt: string
+}
+
+export type SaveRouteFeedbackPayload = {
+  userRating: number
+  difficultyFeedback: DifficultyFeedback
+}
+
+export type RoutePersonalSummary = {
+  totalLogs: number
+  totalAttempts: number
+  topped: boolean
+  flashed: boolean
+  lastLog: ClimbLog | null
+}
