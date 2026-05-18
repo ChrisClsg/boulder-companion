@@ -2,9 +2,16 @@ import { api } from 'src/boot/axios'
 import type { User } from 'src/types'
 
 export const authApi = {
-  getCurrentUser: () => api.get<User>('/auth/me'),
+  async getCurrentUser(): Promise<User> {
+    const response = await api.get<User>('/auth/me')
+    return response.data
+  },
 
-  getCsrfToken: () => api.get('/auth/csrf'),
+  async getCsrfToken(): Promise<void> {
+    await api.get('/auth/csrf')
+  },
 
-  logout: () => api.post('/auth/logout'),
+  async logout(): Promise<void> {
+    await api.post('/auth/logout')
+  },
 }

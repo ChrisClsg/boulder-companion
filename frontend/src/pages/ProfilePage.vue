@@ -88,7 +88,7 @@ const fetchUser = async () => {
   try {
     await authStore.fetchUser()
     user.value = authStore.user
-    await favoriteStore.fetchGyms()
+    await favoriteStore.fetchFavoriteGyms()
   } catch (err: unknown) {
     error.value = (err as { message?: string }).message || 'Failed to fetch user'
     $q.notify({ message: error.value, type: 'negative' })

@@ -6,5 +6,5 @@ export { historyApi } from './history'
 export { favoriteApi } from './favorites'
 
 export type { CreateGymPayload, UpdateGymPayload } from './gyms'
-export type { UpdateRoutePayload } from './routes'
-export type { UpdateHistoryPayload } from './history'
+export type { CreateRoutePayload, UpdateRoutePayload } from './routes'
+export type { CreateHistoryPayload, UpdateHistoryPayload } from './history'

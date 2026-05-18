@@ -144,7 +144,7 @@ const favoriteStore = useFavoriteStore()
 const favoriteLoading = ref(false)
 
 const isFavorite = computed(() => {
-  return favoriteStore.gyms.some((gym: Gym) => gym.id === props.gym.id)
+  return favoriteStore.favoriteGyms.some((gym: Gym) => gym.id === props.gym.id)
 })
 
 const todayOpeningHours = computed(() => {
@@ -168,12 +168,12 @@ const toggleFavorite = async () => {
 
   try {
     if (isFavorite.value) {
-      await favoriteApi.remove(props.gym.id)
+      await favoriteApi.removeFavoriteGym(props.gym.id)
     } else {
-      await favoriteApi.add(props.gym.id)
+      await favoriteApi.addFavoriteGym(props.gym.id)
     }
 
-    await favoriteStore.fetchGyms()
+    await favoriteStore.fetchFavoriteGyms()
   } catch (error: unknown) {
     $q.notify({
       message: getErrorMessage(error, 'Failed to update favorites'),

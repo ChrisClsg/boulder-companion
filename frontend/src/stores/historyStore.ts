@@ -32,7 +32,7 @@ export const useHistoryStore = defineStore('history', {
         if (routeId) params.routeId = routeId
 
         const response = await historyApi.getAll(params)
-        this.history = response.data
+        this.history = response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to fetch history'
         throw error
@@ -46,7 +46,7 @@ export const useHistoryStore = defineStore('history', {
       this.error = null
       try {
         const response = await historyApi.getById(id)
-        this.currentHistory = response.data
+        this.currentHistory = response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to fetch history'
         throw error
@@ -59,8 +59,8 @@ export const useHistoryStore = defineStore('history', {
       this.error = null
       try {
         const response = await historyApi.create(history)
-        this.history.push(response.data)
-        return response.data
+        this.history.push(response)
+        return response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to create history'
         throw error
@@ -73,9 +73,9 @@ export const useHistoryStore = defineStore('history', {
         const response = await historyApi.update(id, updates)
         const index = this.history.findIndex(h => h.id === id)
         if (index !== -1) {
-          this.history[index] = response.data
+          this.history[index] = response
         }
-        return response.data
+        return response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to update history'
         throw error
@@ -102,7 +102,7 @@ export const useHistoryStore = defineStore('history', {
         if (gymId) params.gymId = gymId
 
         const response = await historyApi.getToppedByUser(userId || gymId || '')
-        this.history = response.data
+        this.history = response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to fetch topped routes'
         throw error

@@ -41,7 +41,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await authApi.getCurrentUser()
 
-        this.user = response.data
+        this.user = response
         this.isAuthenticated = true
         this.hasFetchedUser = true
 

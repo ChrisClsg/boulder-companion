@@ -93,7 +93,7 @@ onMounted(async () => {
   if (routeData.value) return
   try {
     const response = await routeApi.getById(route.params.id as string)
-    const fetchedRoute = response.data
+    const fetchedRoute = response
     routeData.value = fetchedRoute
     form.value = {
       gymId: fetchedRoute.gymId,

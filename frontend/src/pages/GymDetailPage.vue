@@ -258,7 +258,7 @@ const fetchGym = async (id: string) => {
 
 const fetchRoutes = async (id: string) => {
   const response = await routeApi.getByGym(id)
-  routes.value = response.data
+  routes.value = response
 }
 
 onMounted(async () => {

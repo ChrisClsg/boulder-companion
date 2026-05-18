@@ -1,36 +1,74 @@
 import { api } from 'src/boot/axios'
 import type { ClimbingHistory } from 'src/types'
 
+export type CreateHistoryPayload = Omit<ClimbingHistory, 'id' | 'createdAt'>
 export type UpdateHistoryPayload = Partial<Omit<ClimbingHistory, 'id' | 'createdAt'>>
 
 export const historyApi = {
-  getAll: (params?: Record<string, string>) =>
-    api.get<ClimbingHistory[]>('/history', { params }),
+  async getAll(params?: Record<string, string>): Promise<ClimbingHistory[]> {
+    const response = await api.get<ClimbingHistory[]>('/history', { params })
+    return response.data
+  },
 
-  getByUser: (userId: string) =>
-    api.get<ClimbingHistory[]>('/history', { params: { userId } }),
+  async getByUser(userId: string): Promise<ClimbingHistory[]> {
+    const response = await api.get<ClimbingHistory[]>('/history', {
+      params: { userId },
+    })
 
-  getByGym: (gymId: string) =>
-    api.get<ClimbingHistory[]>('/history', { params: { gymId } }),
+    return response.data
+  },
 
-  getById: (id: string) =>
-    api.get<ClimbingHistory>(`/history/${id}`),
+  async getByGym(gymId: string): Promise<ClimbingHistory[]> {
+    const response = await api.get<ClimbingHistory[]>('/history', {
+      params: { gymId },
+    })
 
-  getByRoute: (routeId: string) =>
-    api.get<ClimbingHistory[]>('/history', { params: { routeId } }),
+    return response.data
+  },
 
-  create: (history: ClimbingHistory) =>
-    api.post<ClimbingHistory>('/history', history),
+  async getById(id: string): Promise<ClimbingHistory> {
+    const response = await api.get<ClimbingHistory>(`/history/${id}`)
+    return response.data
+  },
 
-  update: (id: string, history: UpdateHistoryPayload) =>
-    api.put<ClimbingHistory>(`/history/${id}`, history),
+  async getByRoute(routeId: string): Promise<ClimbingHistory[]> {
+    const response = await api.get<ClimbingHistory[]>('/history', {
+      params: { routeId },
+    })
 
-  delete: (id: string) =>
-    api.delete(`/history/${id}`),
+    return response.data
+  },
 
-  getToppedByUser: (userId: string) =>
-    api.get<ClimbingHistory[]>('/history/topped', { params: { userId } }),
+  async create(history: CreateHistoryPayload): Promise<ClimbingHistory> {
+    const response = await api.post<ClimbingHistory>('/history', history)
+    return response.data
+  },
 
-  getToppedByGym: (gymId: string) =>
-    api.get<ClimbingHistory[]>('/history/topped', { params: { gymId } }),
+  async update(
+    id: string,
+    history: UpdateHistoryPayload,
+  ): Promise<ClimbingHistory> {
+    const response = await api.put<ClimbingHistory>(`/history/${id}`, history)
+    return response.data
+  },
+
+  async delete(id: string): Promise<void> {
+    await api.delete(`/history/${id}`)
+  },
+
+  async getToppedByUser(userId: string): Promise<ClimbingHistory[]> {
+    const response = await api.get<ClimbingHistory[]>('/history/topped', {
+      params: { userId },
+    })
+
+    return response.data
+  },
+
+  async getToppedByGym(gymId: string): Promise<ClimbingHistory[]> {
+    const response = await api.get<ClimbingHistory[]>('/history/topped', {
+      params: { gymId },
+    })
+
+    return response.data
+  },
 }

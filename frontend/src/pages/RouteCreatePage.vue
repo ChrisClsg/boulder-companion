@@ -90,7 +90,6 @@ const form = ref({
 
 const createRoute = async () => {
   try {
-    const newId = Date.now().toString(36) + Math.random().toString(36).substr(2, 9)
     const routeData: Omit<Route, 'id'> = {
       gymId: form.value.gymId,
       name: form.value.name,
@@ -108,7 +107,7 @@ const createRoute = async () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    await routeApi.create({ id: newId, ...routeData })
+    await routeApi.create({ ...routeData })
     $q.notify({ message: 'Route created successfully', type: 'positive' })
     await router.push('/routes')
   } catch (err: unknown) {

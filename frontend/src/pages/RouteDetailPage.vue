@@ -216,12 +216,12 @@ const activeImage = ref(0)
 
 const fetchRoute = async () => {
   const response = await routeApi.getById(route.params.id as string)
-  routeData.value = response.data
+  routeData.value = response
 }
 
 const fetchHistory = async () => {
   const response = await historyApi.getByRoute(route.params.id as string)
-  history.value = response.data
+  history.value = response
 }
 
 const fetchPageData = async () => {

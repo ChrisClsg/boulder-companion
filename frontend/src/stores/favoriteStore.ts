@@ -1,49 +1,74 @@
 import { defineStore } from 'pinia'
 import { favoriteApi } from 'src/api'
 import type { Gym } from 'src/types'
+import { getErrorMessage } from 'src/utils/errors'
 
 export const useFavoriteStore = defineStore('favorites', {
   state: () => ({
-    gyms: [] as Gym[],
-    isLoading: false,
+    favoriteGyms: [] as Gym[],
+    isLoadingFavoriteGyms: false,
     error: null as string | null,
   }),
 
   getters: {
-    gymIds: (state): string[] => state.gyms.map((g: Gym) => g.id),
+    favoriteGymIds: (state): string[] =>
+      state.favoriteGyms.map((gym) => gym.id),
+
+    favoriteGymsCount: (state): number =>
+      state.favoriteGyms.length,
+
+    isFavoriteGym: (state) => {
+      return (gymId: string): boolean =>
+        state.favoriteGyms.some((gym) => gym.id === gymId)
+    },
   },
 
   actions: {
-    async fetchGyms() {
-      this.isLoading = true
+    async fetchFavoriteGyms(): Promise<Gym[]> {
+      this.isLoadingFavoriteGyms = true
       this.error = null
+
       try {
-        const response = await favoriteApi.getGyms()
-        this.gyms = response.data
+        const gyms = await favoriteApi.getFavoriteGyms()
+        this.favoriteGyms = gyms
+        return gyms
       } catch (error: unknown) {
-        this.error = typeof error === 'string' ? error : (error as { message?: string }).message || 'Failed to fetch favorites'
+        this.error = getErrorMessage(error, 'Failed to fetch favorite gyms')
+        throw error
       } finally {
-        this.isLoading = false
+        this.isLoadingFavoriteGyms = false
       }
     },
 
-    async addFavorite(gymId: string) {
+    async addFavoriteGym(gymId: string): Promise<void> {
       this.error = null
+
       try {
-        await favoriteApi.add(gymId)
-        await this.fetchGyms()
+        const gyms = await favoriteApi.addFavoriteGym(gymId)
+        this.favoriteGyms = gyms
       } catch (error: unknown) {
-        this.error = typeof error === 'string' ? error : (error as { message?: string }).message || 'Failed to add favorite'
+        this.error = getErrorMessage(error, 'Failed to add favorite gym')
+        throw error
       }
     },
 
-    async removeFavorite(gymId: string) {
+    async removeFavoriteGym(gymId: string): Promise<void> {
       this.error = null
+
       try {
-        await favoriteApi.remove(gymId)
-        await this.fetchGyms()
+        const gyms = await favoriteApi.removeFavoriteGym(gymId)
+        this.favoriteGyms = gyms
       } catch (error: unknown) {
-        this.error = typeof error === 'string' ? error : (error as { message?: string }).message || 'Failed to remove favorite'
+        this.error = getErrorMessage(error, 'Failed to remove favorite gym')
+        throw error
+      }
+    },
+
+    async toggleFavoriteGym(gymId: string): Promise<void> {
+      if (this.isFavoriteGym(gymId)) {
+        await this.removeFavoriteGym(gymId)
+      } else {
+        await this.addFavoriteGym(gymId)
       }
     },
 

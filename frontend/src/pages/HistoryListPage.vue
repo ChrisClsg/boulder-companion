@@ -85,7 +85,7 @@ const fetchHistory = async () => {
   error.value = null
   try {
     const response = await historyApi.getAll()
-    history.value = response.data
+    history.value = response
   } catch (err: unknown) {
     error.value = (err as Error).message || 'Failed to fetch history'
     $q.notify({ message: error.value, type: 'negative' })

@@ -1,86 +1,52 @@
 <template>
   <q-page padding>
     <div class="home-page">
-      <div v-if="loading" class="text-center q-pa-md">
-        <q-spinner-dots color="primary" size="40px" />
+      <div v-if="loading" class="state state--loading">
+        <q-spinner-dots color="primary" size="44px" />
+        <div class="text-body2 text-grey-6 q-mt-sm">
+          Loading your climbing world...
+        </div>
       </div>
-
-      <div v-else-if="error" class="text-center text-negative q-pa-md">
-        {{ error }}
-      </div>
-
-      <card-grid v-else-if="authStore.isAuthenticated && gyms.length > 0">
-        <gym-card
-          v-for="gym in gyms"
-          :key="gym.id"
-          :gym="gym"
-        />
-      </card-grid>
 
       <q-card
-        v-else-if="authStore.isAuthenticated && gyms.length === 0"
+        v-else-if="error"
         flat
         bordered
-        class="empty-state-card text-center"
+        class="state state--error"
       >
         <q-card-section>
           <q-icon
-            name="fitness_center"
-            size="48px"
-            color="grey-5"
+            name="error_outline"
+            size="44px"
+            color="negative"
           />
 
           <div class="text-h6 q-mt-sm">
-            No gyms found
+            Something went wrong
           </div>
 
-          <div class="text-body2 text-grey-6">
-            Add your first climbing gym.
+          <div class="text-body2 text-grey-7 q-mt-xs">
+            {{ error }}
           </div>
 
           <q-btn
-            label="Add Gym"
+            label="Try again"
             color="primary"
             unelevated
             rounded
-            icon="add"
+            icon="refresh"
             class="q-mt-md"
-            @click="$router.push('/gyms/new')"
+            @click="initialize"
           />
         </q-card-section>
       </q-card>
 
-      <q-card
+      <dashboard-home v-else-if="authStore.isAuthenticated" />
+
+      <public-home
         v-else
-        flat
-        bordered
-        class="empty-state-card text-center"
-      >
-        <q-card-section>
-          <q-icon
-            name="lock"
-            size="48px"
-            color="grey-5"
-          />
-
-          <div class="text-h6 q-mt-sm">
-            Please login to view gyms
-          </div>
-
-          <div class="text-body2 text-grey-6">
-            Your gym list is available after signing in.
-          </div>
-
-          <q-btn
-            label="Login"
-            color="primary"
-            unelevated
-            rounded
-            class="q-mt-md"
-            @click="authStore.loginWithGithub"
-          />
-        </q-card-section>
-      </q-card>
+        @login="authStore.loginWithGithub"
+      />
     </div>
   </q-page>
 </template>
@@ -89,28 +55,24 @@
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/authStore'
-import { gymApi } from 'src/api'
-import CardGrid from 'src/components/CardGrid.vue'
-import GymCard from 'src/components/GymCard.vue'
-import type { Gym } from 'src/types'
 import { getErrorMessage } from 'src/utils/errors'
+import PublicHome from 'src/components/home/PublicHome.vue'
+import DashboardHome from 'src/components/home/DashboardHome.vue'
 
 const $q = useQuasar()
 const authStore = useAuthStore()
 
-const gyms = ref<Gym[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const fetchGyms = async () => {
+const initialize = async () => {
   loading.value = true
   error.value = null
 
   try {
-    const data = await gymApi.getAll()
-    gyms.value = data
+    await authStore.fetchUser()
   } catch (err: unknown) {
-    error.value = getErrorMessage(err, 'Failed to fetch gyms')
+    error.value = getErrorMessage(err, 'Failed to load home page')
 
     $q.notify({
       message: error.value,
@@ -121,13 +83,7 @@ const fetchGyms = async () => {
   }
 }
 
-onMounted(async () => {
-  await authStore.fetchUser()
-
-  if (authStore.isAuthenticated) {
-    await fetchGyms()
-  }
-})
+onMounted(initialize)
 </script>
 
 <style scoped>
@@ -137,36 +93,18 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
-.home-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.home-title {
-  margin: 0;
-  font-size: clamp(2rem, 5vw, 3.25rem);
-  line-height: 1.05;
-  font-weight: 700;
-}
-
-.empty-state-card {
+.state {
   max-width: 520px;
-  margin: 0 auto;
-  border-radius: 18px;
-  padding: 24px;
+  margin: 64px auto;
+  text-align: center;
 }
 
-@media (max-width: 600px) {
-  .home-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
+.state--loading {
+  padding: 48px 24px;
+}
 
-  .home-header .q-btn {
-    align-self: flex-start;
-  }
+.state--error {
+  border-radius: 24px;
+  padding: 20px;
 }
 </style>

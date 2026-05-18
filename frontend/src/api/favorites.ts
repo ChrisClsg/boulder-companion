@@ -2,9 +2,18 @@ import { api } from 'src/boot/axios'
 import type { Gym } from 'src/types'
 
 export const favoriteApi = {
-  getGyms: () => api.get<Gym[]>('/users/me/favorite-gyms'),
+  async getFavoriteGyms(): Promise<Gym[]> {
+    const response = await api.get<Gym[]>('/users/me/favorite-gyms')
+    return response.data
+  },
 
-  add: (gymId: string) => api.put<Gym[]>(`/users/me/favorite-gyms/${gymId}`),
+  async addFavoriteGym(gymId: string): Promise<Gym[]> {
+    const response = await api.put<Gym[]>(`/users/me/favorite-gyms/${gymId}`)
+    return response.data
+  },
 
-  remove: (gymId: string) => api.delete<Gym[]>(`/users/me/favorite-gyms/${gymId}`),
+  async removeFavoriteGym(gymId: string): Promise<Gym[]> {
+    const response = await api.delete<Gym[]>(`/users/me/favorite-gyms/${gymId}`)
+    return response.data
+  },
 }

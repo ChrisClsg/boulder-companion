@@ -21,7 +21,7 @@ export const useRouteStore = defineStore('routes', {
       this.error = null
       try {
         const response = await routeApi.getByGym(gymId)
-        this.routes = response.data
+        this.routes = response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to fetch routes'
         throw error
@@ -35,7 +35,7 @@ export const useRouteStore = defineStore('routes', {
       this.error = null
       try {
         const response = await routeApi.getById(id)
-        this.currentRoute = response.data
+        this.currentRoute = response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to fetch route'
         throw error
@@ -48,8 +48,8 @@ export const useRouteStore = defineStore('routes', {
       this.error = null
       try {
         const response = await routeApi.create(route)
-        this.routes.unshift(response.data)
-        return response.data
+        this.routes.unshift(response)
+        return response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to create route'
         throw error
@@ -62,9 +62,9 @@ export const useRouteStore = defineStore('routes', {
         const response = await routeApi.update(id, updates)
         const index = this.routes.findIndex(r => r.id === id)
         if (index !== -1) {
-          this.routes[index] = response.data
+          this.routes[index] = response
         }
-        return response.data
+        return response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to update route'
         throw error
@@ -88,9 +88,9 @@ export const useRouteStore = defineStore('routes', {
         const response = await routeApi.archive(id)
         const index = this.routes.findIndex(r => r.id === id)
         if (index !== -1) {
-          this.routes[index] = response.data
+          this.routes[index] = response
         }
-        return response.data
+        return response
       } catch (error: unknown) {
         this.error = (error as { message?: string }).message || 'Failed to archive route'
         throw error
