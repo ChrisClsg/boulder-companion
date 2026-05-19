@@ -31,9 +31,12 @@ export const useRouteStore = defineStore('routes', {
       this.error = null
 
       try {
-        const routes = await routeApi.getByGym(gymId)
-        this.routes = routes
-        return routes
+        const fetched = await routeApi.getByGym(gymId)
+        this.routes = [
+          ...this.routes.filter(r => r.gymId !== gymId),
+          ...fetched,
+        ]
+        return fetched
       } catch (error: unknown) {
         this.error = getErrorMessage(error, 'Failed to fetch routes')
         throw error

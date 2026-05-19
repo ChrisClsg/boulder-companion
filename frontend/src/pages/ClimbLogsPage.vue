@@ -104,53 +104,26 @@
       </q-card>
 
       <div v-else class="logs-list">
-        <q-card
+        <ClimbLogCard
           v-for="log in filteredLogs"
           :key="log.id"
-          flat
-          bordered
-          class="log-card"
-          @click="$router.push(`/routes/${log.routeId}`)"
+          :log="log"
+          clickable
+          fixed-chip-width
+          :deleting="deletingLogId === log.id"
+          @delete="handleDelete"
         >
-          <q-card-section>
-            <div class="log-card-content">
-              <div class="log-main">
-                <div style="width: 7rem;">
-                  <q-chip
-                    :color="logColor(log)"
-                    text-color="white"
-                    :icon="logIcon(log)"
-                  >
-                    {{ logLabel(log) }}
-                  </q-chip>
-                </div>
+          <div class="text-subtitle1 text-weight-bold">
+            {{ routeName(log.routeId) }}
+          </div>
 
-                <div>
-                  <div class="text-subtitle1 text-weight-bold">
-                    {{ routeName(log.routeId) }}
-                  </div>
-
-                  <div class="text-caption text-grey-6">
-                    {{ gymName(log.gymId) }} ·
-                    {{ log.attempts }}
-                    {{ log.attempts === 1 ? 'attempt' : 'attempts' }} ·
-                    {{ formatDate(log.climbedAt) }}
-                  </div>
-                </div>
-              </div>
-
-              <q-btn
-                flat
-                round
-                dense
-                color="negative"
-                icon="delete_outline"
-                :loading="deletingLogId === log.id"
-                @click="ev => { ev.stopPropagation(); deleteLog(log) }"
-              />
-            </div>
-          </q-card-section>
-        </q-card>
+          <div class="text-caption text-grey-6">
+            {{ gymName(log.gymId) }}<template v-if="wallName(log.routeId)"> · {{ wallName(log.routeId) }}</template> ·
+            {{ log.attempts }}
+            {{ log.attempts === 1 ? 'attempt' : 'attempts' }} ·
+            {{ formatClimbedAt(log.climbedAt) }}
+          </div>
+        </ClimbLogCard>
       </div>
     </div>
   </q-page>
@@ -163,6 +136,8 @@ import { useGymStore } from 'stores/gymStore'
 import { useRouteStore } from 'stores/routeStore'
 import { useClimbLogStore } from 'stores/climbLogStore'
 import { getErrorMessage } from 'src/utils/errors'
+import { formatClimbedAt } from 'src/utils/climbLog'
+import ClimbLogCard from 'src/components/climbLogs/ClimbLogCard.vue'
 import type { ClimbLog } from 'src/types'
 
 type ResultFilter = 'attempted' | 'topped' | 'flashed'
@@ -262,7 +237,7 @@ const fetchPageData = async () => {
   }
 }
 
-const deleteLog = async (log: ClimbLog) => {
+const handleDelete = async (log: ClimbLog) => {
   deletingLogId.value = log.id
 
   try {
@@ -282,56 +257,14 @@ const deleteLog = async (log: ClimbLog) => {
   }
 }
 
-const routeName = (routeId: string): string => {
-  return routeStore.getRoute(routeId)?.name ?? 'Unknown route'
-}
+const routeName = (routeId: string): string =>
+  routeStore.getRoute(routeId)?.name ?? 'Unknown route'
 
-const gymName = (gymId: string): string => {
-  return gymStore.getGym(gymId)?.name ?? 'Unknown gym'
-}
+const gymName = (gymId: string): string =>
+  gymStore.getGym(gymId)?.name ?? 'Unknown gym'
 
-const logLabel = (log: ClimbLog): string => {
-  if (log.flashed) {
-    return 'Flash'
-  }
-
-  if (log.topped) {
-    return 'Topped'
-  }
-
-  return 'Tried'
-}
-
-const logColor = (log: ClimbLog): string => {
-  if (log.flashed) {
-    return 'purple'
-  }
-
-  if (log.topped) {
-    return 'positive'
-  }
-
-  return 'orange'
-}
-
-const logIcon = (log: ClimbLog): string => {
-  if (log.flashed) {
-    return 'bolt'
-  }
-
-  if (log.topped) {
-    return 'check_circle'
-  }
-
-  return 'hourglass_bottom'
-}
-
-const formatDate = (value: string): string => {
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value))
-}
+const wallName = (routeId: string): string =>
+  routeStore.getRoute(routeId)?.wall ?? ''
 
 onMounted(fetchPageData)
 </script>
@@ -401,39 +334,5 @@ onMounted(fetchPageData)
 .logs-list {
   display: grid;
   gap: 12px;
-}
-
-.log-card {
-  border-radius: 22px;
-  background: linear-gradient(180deg, #ffffff, #fafbfc);
-}
-
-.log-card:hover {
-  cursor: pointer;
-}
-
-.log-card-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.log-main {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-@media (max-width: 600px) {
-  .log-card-content,
-  .log-main {
-    align-items: flex-start;
-  }
-
-  .log-main {
-    flex-direction: column;
-    gap: 8px;
-  }
 }
 </style>

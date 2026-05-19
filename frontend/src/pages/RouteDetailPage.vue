@@ -147,49 +147,23 @@
             </q-card>
 
             <div v-else class="log-list">
-              <q-card
+              <ClimbLogCard
                 v-for="log in sortedLogs"
                 :key="log.id"
-                flat
-                bordered
-                class="log-card"
+                :log="log"
+                dense-chip
+                :deleting="deletingLogId === log.id"
+                @delete="handleDelete"
               >
-                <q-card-section>
-                  <div class="log-card-content">
-                    <div class="log-main">
-                      <q-chip
-                        dense
-                        :color="logColor(log)"
-                        text-color="white"
-                        :icon="logIcon(log)"
-                      >
-                        {{ logLabel(log) }}
-                      </q-chip>
+                <div class="text-subtitle1 text-weight-bold">
+                  {{ log.attempts }}
+                  {{ log.attempts === 1 ? 'attempt' : 'attempts' }}
+                </div>
 
-                      <div>
-                        <div class="text-subtitle1 text-weight-bold">
-                          {{ log.attempts }}
-                          {{ log.attempts === 1 ? 'attempt' : 'attempts' }}
-                        </div>
-
-                        <div class="text-caption text-grey-6">
-                          {{ formatFullDate(log.climbedAt) }}
-                        </div>
-                      </div>
-                    </div>
-
-                    <q-btn
-                      flat
-                      round
-                      dense
-                      color="negative"
-                      icon="delete_outline"
-                      :loading="deletingLogId === log.id"
-                      @click="deleteLog(log)"
-                    />
-                  </div>
-                </q-card-section>
-              </q-card>
+                <div class="text-caption text-grey-6">
+                  {{ formatClimbedAt(log.climbedAt) }}
+                </div>
+              </ClimbLogCard>
             </div>
           </div>
         </div>
@@ -283,7 +257,7 @@
                 v-if="personalSummary.lastLog"
                 class="text-body2 text-grey-7 q-mt-md"
               >
-                Last logged {{ formatFullDate(personalSummary.lastLog.climbedAt) }}
+                Last logged {{ formatClimbedAt(personalSummary.lastLog.climbedAt) }}
               </div>
             </q-card-section>
           </q-card>
@@ -308,7 +282,9 @@ import { useRouteStore } from 'src/stores/routeStore'
 import { useClimbLogStore } from 'src/stores/climbLogStore'
 import { useRouteFeedbackStore } from 'src/stores/routeFeedbackStore'
 import RouteActionsPanel from 'src/components/routes/RouteActionsPanel.vue'
+import ClimbLogCard from 'src/components/climbLogs/ClimbLogCard.vue'
 import { getErrorMessage } from 'src/utils/errors'
+import { formatClimbedAt } from 'src/utils/climbLog'
 import type {
   ClimbLog,
   RoutePersonalSummary,
@@ -416,7 +392,7 @@ const summaryIcon = computed(() => {
   return 'hourglass_bottom'
 })
 
-const deleteLog = async (log: ClimbLog) => {
+const handleDelete = async (log: ClimbLog) => {
   deletingLogId.value = log.id
 
   try {
@@ -434,49 +410,6 @@ const deleteLog = async (log: ClimbLog) => {
   } finally {
     deletingLogId.value = null
   }
-}
-
-const logLabel = (log: ClimbLog): string => {
-  if (log.flashed) {
-    return 'Flash'
-  }
-
-  if (log.topped) {
-    return 'Topped'
-  }
-
-  return 'Tried'
-}
-
-const logColor = (log: ClimbLog): string => {
-  if (log.flashed) {
-    return 'purple'
-  }
-
-  if (log.topped) {
-    return 'positive'
-  }
-
-  return 'orange'
-}
-
-const logIcon = (log: ClimbLog): string => {
-  if (log.flashed) {
-    return 'bolt'
-  }
-
-  if (log.topped) {
-    return 'check_circle'
-  }
-
-  return 'hourglass_bottom'
-}
-
-const formatFullDate = (value: string): string => {
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value))
 }
 
 onMounted(async () => {
@@ -717,35 +650,5 @@ onMounted(async () => {
 .log-list {
   display: grid;
   gap: 12px;
-}
-
-.log-card {
-  border-radius: 22px;
-  background: linear-gradient(180deg, #ffffff, #fafbfc);
-}
-
-.log-card-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.log-main {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-@media (max-width: 599px) {
-  .log-card-content,
-  .log-main {
-    align-items: flex-start;
-  }
-
-  .log-main {
-    flex-direction: column;
-    gap: 8px;
-  }
 }
 </style>
