@@ -42,7 +42,6 @@
 
     <div v-else-if="routeData" class="route-detail-page">
       <div class="route-detail-grid">
-        <!-- LEFT col (desktop): carousel -->
         <div class="grid-area-carousel">
           <q-carousel
             v-if="routeData.images?.length"
@@ -109,7 +108,6 @@
           </div>
         </div>
 
-        <!-- RIGHT col (desktop): metadata + summary + collapsible actions -->
         <div class="grid-area-content">
           <div class="text-overline text-primary">
             Boulder Route
@@ -207,12 +205,10 @@
           <route-actions-panel
             :route-id="routeData.id"
             :gym-id="routeData.gymId"
-            :openFeedback="true"
             class="q-mt-lg"
           />
         </div>
 
-        <!-- LEFT col bottom (desktop) / last section (mobile): climb logs -->
         <div class="grid-area-logs">
           <div class="logs-header">
             <div>

@@ -74,6 +74,7 @@
         <q-chip
           outline
           color="primary"
+          icon="palette"
         >
           {{ route.holdColor }}
         </q-chip>
