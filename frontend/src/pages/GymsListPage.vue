@@ -83,9 +83,8 @@
             </div>
 
             <q-chip
-              dense
+              outline
               color="primary"
-              text-color="white"
               icon="favorite"
             >
               {{ filteredFavoriteGyms.length }}
@@ -131,7 +130,6 @@
             </div>
 
             <q-chip
-              dense
               outline
               color="primary"
               icon="fitness_center"

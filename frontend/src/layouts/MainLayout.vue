@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
+    <q-header class="app-header">
+      <q-toolbar class="app-toolbar">
         <q-btn
           flat
           dense
@@ -10,38 +10,54 @@
           aria-label="Menu"
           @click="toggleLeftDrawer"
           :disable="!isAuthenticated"
+          class="app-menu-btn"
         />
 
-        <q-toolbar-title>Boulder Companion</q-toolbar-title>
+        <div
+          class="app-brand"
+          @click="$router.push('/')"
+        >
+          <div class="app-brand__mark">
+            <q-icon name="terrain" size="18px" />
+          </div>
+          <span class="app-brand__name">
+            Boulder<span class="app-brand__accent">Companion</span>
+          </span>
+        </div>
+
+        <q-space />
+
+        <template v-if="isAuthenticated">
+          <q-btn
+            flat
+            dense
+            round
+            icon="account_circle"
+            aria-label="Account"
+            @click="goToProfile"
+            class="app-action-btn"
+          />
+          <q-btn
+            flat
+            dense
+            round
+            icon="logout"
+            aria-label="Logout"
+            @click="handleLogout"
+            class="app-action-btn"
+          />
+        </template>
 
         <q-btn
-          flat
-          dense
-          round
-          icon="account_circle"
-          aria-label="Account"
-          @click="goToProfile"
-          v-if="isAuthenticated"
-        />
-
-        <q-btn
-          flat
-          dense
-          round
-          icon="logout"
-          aria-label="Logout"
-          @click="handleLogout"
-          v-if="isAuthenticated"
-        />
-
-        <q-btn
-          flat
-          dense
-          round
+          v-else
+          unelevated
+          rounded
+          color="primary"
+          label="Sign in"
           icon="login"
-          aria-label="Login"
+          size="sm"
           @click="authStore.loginWithGithub"
-          v-if="!isAuthenticated"
+          class="app-signin-btn"
         />
       </q-toolbar>
     </q-header>
@@ -51,6 +67,7 @@
       show-if-above
       bordered
       v-if="isAuthenticated"
+      class="app-drawer"
     >
       <AppDrawerLinks />
     </q-drawer>
@@ -72,7 +89,6 @@ const authStore = useAuthStore()
 
 const isAuthenticated = ref(authStore.isAuthenticated)
 
-// Watch auth store changes
 authStore.$subscribe((mutation, state) => {
   isAuthenticated.value = state.isAuthenticated
 })
@@ -93,3 +109,76 @@ async function handleLogout() {
   await router.push('/')
 }
 </script>
+
+<style scoped>
+.app-header {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.07),
+    0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.app-toolbar {
+  height: 64px;
+  padding: 0 16px;
+  gap: 4px;
+}
+
+.app-menu-btn {
+  color: #64748b;
+  margin-right: 4px;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+}
+
+.app-brand__mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(25, 118, 210, 0.1);
+  color: #1976d2;
+  flex-shrink: 0;
+}
+
+.app-brand__name {
+  font-size: 1.1rem;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #0f172a;
+}
+
+.app-brand__accent {
+  color: #1976d2;
+  margin-left: 4px;
+}
+
+.app-action-btn {
+  color: #64748b;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.app-action-btn:hover {
+  color: #1976d2;
+}
+
+.app-signin-btn {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 0 16px;
+}
+
+.app-drawer {
+  background: #ffffff;
+}
+</style>
