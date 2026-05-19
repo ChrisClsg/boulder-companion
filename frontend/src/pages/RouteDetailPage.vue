@@ -207,6 +207,7 @@
           <route-actions-panel
             :route-id="routeData.id"
             :gym-id="routeData.gymId"
+            :openFeedback="true"
             class="q-mt-lg"
           />
         </div>

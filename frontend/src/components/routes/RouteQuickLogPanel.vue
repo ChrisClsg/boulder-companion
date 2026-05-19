@@ -11,8 +11,8 @@
         unelevated
         rounded
         toggle-color="primary"
-        color="grey-2"
-        text-color="grey-8"
+        color="grey-4"
+        text-color="grey-9"
         :options="resultOptions"
       />
     </div>

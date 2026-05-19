@@ -5,10 +5,10 @@
     class="action-list"
   >
     <q-expansion-item
+      v-model="logOpen"
       :icon="personalSummary.topped ? 'add_task' : 'add'"
       label="Add new log"
       :caption="quickLogCaption"
-      :default-opened="!personalSummary.topped"
       header-class="text-primary"
       class="action-item"
     >
@@ -17,40 +17,45 @@
         :gym-id="gymId"
         :last-log="lastLog"
         :saving="isSaving"
-        @save="saveLog"
+        @save="onSaveLog"
       />
     </q-expansion-item>
 
     <q-expansion-item
+      v-model="feedbackOpen"
       icon="rate_review"
       label="Your route feedback"
       :caption="feedbackCaption"
-      :default-opened="!feedback"
       header-class="text-primary"
       class="action-item"
     >
       <route-feedback-card
         :feedback="feedback"
         :saving="isSaving"
-        @save="saveFeedback"
+        @save="onSaveFeedback"
       />
     </q-expansion-item>
   </q-list>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouteActions } from 'src/composables/useRouteActions'
 import RouteQuickLogPanel from 'src/components/routes/RouteQuickLogPanel.vue'
 import RouteFeedbackCard from 'src/components/routes/RouteFeedbackCard.vue'
+import type { CreateClimbLogPayload, SaveRouteFeedbackPayload } from 'src/types'
 
 const props = defineProps<{
   routeId: string
   gymId: string
+  openFeedback?: boolean
 }>()
 
 const { personalSummary, feedback, lastLog, isSaving, saveLog, saveFeedback } =
   useRouteActions(() => props.routeId)
+
+const logOpen = ref(!personalSummary.value.topped)
+const feedbackOpen = ref((props.openFeedback ?? true) && !feedback.value)
 
 const quickLogCaption = computed(() => {
   const last = lastLog.value
@@ -64,6 +69,16 @@ const feedbackCaption = computed(() => {
   const diff = feedback.value.difficultyFeedback.toLowerCase().replace(/_/g, ' ')
   return `★ ${feedback.value.userRating} · Felt ${diff}`
 })
+
+const onSaveLog = async (payload: { log: CreateClimbLogPayload }) => {
+  await saveLog(payload)
+  logOpen.value = false
+}
+
+const onSaveFeedback = async (payload: SaveRouteFeedbackPayload) => {
+  await saveFeedback(payload)
+  feedbackOpen.value = false
+}
 
 const formatFullDate = (value: string): string =>
   new Intl.DateTimeFormat(undefined, {

@@ -120,6 +120,7 @@
           v-if="quickLogOpen"
           :route-id="route.id"
           :gym-id="route.gymId"
+          :open-feedback="false"
           class="q-mt-lg"
         />
       </q-slide-transition>

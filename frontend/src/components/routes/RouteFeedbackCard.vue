@@ -67,7 +67,7 @@ const emit = defineEmits<{
 }>()
 
 const rating = ref(0)
-const difficultyFeedback = ref<DifficultyFeedback | null>(null)
+const difficultyFeedback = ref<DifficultyFeedback>('ABOUT_RIGHT')
 
 const difficultyOptions = [
   {
@@ -96,7 +96,7 @@ watch(
   () => props.feedback,
   (feedback) => {
     rating.value = feedback?.userRating ?? 0
-    difficultyFeedback.value = feedback?.difficultyFeedback ?? null
+    difficultyFeedback.value = feedback?.difficultyFeedback ?? 'ABOUT_RIGHT'
   },
   { immediate: true },
 )

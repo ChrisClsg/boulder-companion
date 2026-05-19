@@ -34,7 +34,7 @@ export function useRouteActions(routeId: MaybeRefOrGetter<string>) {
   async function saveLog(payload: { log: CreateClimbLogPayload }): Promise<ClimbLog | null> {
     try {
       const createdLog = await climbLogStore.createLog(payload.log)
-      $q.notify({ message: 'Climb logged', type: 'positive' })
+      $q.notify({ closeBtn: true, message: 'Climb logged', timeout: 2000,type: 'positive' })
       return createdLog
     } catch (err: unknown) {
       $q.notify({

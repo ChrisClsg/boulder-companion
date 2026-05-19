@@ -178,6 +178,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { gymApi, routeApi } from 'src/api'
 import { useAuthStore } from 'stores/authStore'
+import { useClimbLogStore } from 'stores/climbLogStore'
+import { useRouteFeedbackStore } from 'stores/routeFeedbackStore'
 import CardGrid from 'src/components/CardGrid.vue'
 import RouteCard from 'src/components/routes/RouteCard.vue'
 import type { Gym, Route as ClimbingRoute } from 'src/types'
@@ -191,6 +193,8 @@ const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
 const authStore = useAuthStore()
+const climbLogStore = useClimbLogStore()
+const routeFeedbackStore = useRouteFeedbackStore()
 
 const gym = ref<Gym | null>(null)
 const routes = ref<ClimbingRoute[]>([])
@@ -272,7 +276,12 @@ onMounted(async () => {
     await Promise.all([
       fetchGym(id),
       fetchRoutes(id),
+      climbLogStore.fetchLogsByGym(id),
     ])
+
+    await Promise.allSettled(
+      routes.value.map(r => routeFeedbackStore.fetchMyFeedback(r.id)),
+    )
   } catch (err: unknown) {
     error.value = getErrorMessage(err, 'Failed to load gym')
 
