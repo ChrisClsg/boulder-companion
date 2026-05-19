@@ -110,6 +110,7 @@
           flat
           bordered
           class="log-card"
+          @click="$router.push(`/routes/${log.routeId}`)"
         >
           <q-card-section>
             <div class="log-card-content">
@@ -144,7 +145,7 @@
                 color="negative"
                 icon="delete_outline"
                 :loading="deletingLogId === log.id"
-                @click="deleteLog(log)"
+                @click="ev => { ev.stopPropagation(); deleteLog(log) }"
               />
             </div>
           </q-card-section>
@@ -194,7 +195,7 @@ const gymOptions = computed(() =>
 
 const resultOptions = [
   {
-    label: 'Tried',
+    label: 'Unfinished',
     value: 'attempted',
   },
   {
@@ -219,11 +220,11 @@ const filteredLogs = computed(() => {
       }
 
       if (filter.value.result === 'topped') {
-        return log.topped && !log.flashed
+        return log.topped
       }
 
       if (filter.value.result === 'attempted') {
-        return !log.topped
+        return !log.topped && !log.flashed
       }
 
       return true
@@ -404,6 +405,10 @@ onMounted(fetchPageData)
 .log-card {
   border-radius: 22px;
   background: linear-gradient(180deg, #ffffff, #fafbfc);
+}
+
+.log-card:hover {
+  cursor: pointer;
 }
 
 .log-card-content {

@@ -1,5 +1,8 @@
 <template>
-  <q-page padding>
+  <q-page
+    :class="`${$q.screen.lt.md ? 'q-pt-none' : ''}`"
+    padding
+  >
     <div v-if="loading" class="state state--loading">
       <q-spinner-dots color="primary" size="44px" />
 
@@ -84,13 +87,6 @@
 
                 <div class="text-caption text-grey-3">
                   {{ routeData.wall }}
-                </div>
-
-                <div
-                  v-if="img.caption"
-                  class="text-caption text-grey-4 q-mt-xs"
-                >
-                  {{ img.caption }}
                 </div>
               </div>
             </q-carousel-slide>
