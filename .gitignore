@@ -34,5 +34,4 @@ build/
 
 ### Testing AI agents ###
 .claude
-.roo/
-openspec/
+CLAUDE.md
