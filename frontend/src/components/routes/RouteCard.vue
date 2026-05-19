@@ -113,28 +113,10 @@
           </div>
           </span>
         </div>
-
-
-
-        <div
-          v-if="feedback"
-          class="feedback-mini q-mt-xs"
-        >
-          <q-rating
-            :model-value="feedback.userRating"
-            readonly
-            size="16px"
-            color="amber"
-            icon="star_border"
-            icon-selected="star"
-          />
-
-          <span>{{ difficultyLabel(feedback.difficultyFeedback) }}</span>
-        </div>
       </div>
 
       <q-slide-transition>
-        <route-quick-log-panel
+        <!-- <route-quick-log-panel
           v-if="quickLogOpen"
           class="q-mt-sm"
           :route-id="route.id"
@@ -142,6 +124,12 @@
           :last-log="personalSummary.lastLog"
           :saving="isSaving"
           @save="saveQuickLog"
+          /> -->
+        <route-actions-panel
+          v-if="true"
+          :route-id="route.id"
+          :gym-id="route.gymId"
+          class="q-mt-lg"
         />
       </q-slide-transition>
     </q-card-section>
@@ -178,31 +166,30 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import RouteQuickLogPanel from 'src/components/routes/RouteQuickLogPanel.vue'
+// import RouteQuickLogPanel from 'src/components/routes/RouteQuickLogPanel.vue'
 import { useRouteActions } from 'src/composables/useRouteActions'
 import type {
-  ClimbLog,
-  DifficultyFeedback,
+  // ClimbLog,
   Route,
-  RouteFeedback,
+  // RouteFeedback,
 } from 'src/types'
 
 const props = defineProps<{
   route: Route
 }>()
 
-const emit = defineEmits<{
-  saved: [{
-    routeId: string
-    log: ClimbLog
-    feedback?: RouteFeedback
-  }]
-}>()
+// const emit = defineEmits<{
+//   saved: [{
+//     routeId: string
+//     log: ClimbLog
+//     feedback?: RouteFeedback
+//   }]
+// }>()
 
 const activeSlide = ref(0)
 const quickLogOpen = ref(false)
 
-const { personalSummary, feedback, isSaving, saveLog } =
+const { personalSummary } =
   useRouteActions(() => props.route.id)
 
 const summaryLabel = computed(() => {
@@ -253,25 +240,13 @@ const summaryIcon = computed(() => {
   return 'hourglass_bottom'
 })
 
-const saveQuickLog = async (payload: { log: Parameters<typeof saveLog>[0]['log'] }) => {
-  const createdLog = await saveLog(payload)
-  if (createdLog) {
-    quickLogOpen.value = false
-    emit('saved', { routeId: props.route.id, log: createdLog })
-  }
-}
-
-const difficultyLabel = (value: DifficultyFeedback): string => {
-  const labels: Record<DifficultyFeedback, string> = {
-    MUCH_HARDER: 'Much harder',
-    HARDER: 'Harder',
-    ABOUT_RIGHT: 'About right',
-    EASIER: 'Easier',
-    MUCH_EASIER: 'Much easier',
-  }
-
-  return labels[value]
-}
+// const saveQuickLog = async (payload: { log: Parameters<typeof saveLog>[0]['log'] }) => {
+//   const createdLog = await saveLog(payload)
+//   if (createdLog) {
+//     quickLogOpen.value = false
+//     emit('saved', { routeId: props.route.id, log: createdLog })
+//   }
+// }
 
 const formatDate = (value: string): string => {
   return new Intl.DateTimeFormat(undefined, {
