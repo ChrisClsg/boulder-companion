@@ -116,17 +116,8 @@
       </div>
 
       <q-slide-transition>
-        <!-- <route-quick-log-panel
-          v-if="quickLogOpen"
-          class="q-mt-sm"
-          :route-id="route.id"
-          :gym-id="route.gymId"
-          :last-log="personalSummary.lastLog"
-          :saving="isSaving"
-          @save="saveQuickLog"
-          /> -->
         <route-actions-panel
-          v-if="true"
+          v-if="quickLogOpen"
           :route-id="route.id"
           :gym-id="route.gymId"
           class="q-mt-lg"
@@ -166,25 +157,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-// import RouteQuickLogPanel from 'src/components/routes/RouteQuickLogPanel.vue'
+import RouteActionsPanel from 'src/components/routes/RouteActionsPanel.vue'
 import { useRouteActions } from 'src/composables/useRouteActions'
-import type {
-  // ClimbLog,
-  Route,
-  // RouteFeedback,
-} from 'src/types'
+import type { Route } from 'src/types'
 
 const props = defineProps<{
   route: Route
 }>()
-
-// const emit = defineEmits<{
-//   saved: [{
-//     routeId: string
-//     log: ClimbLog
-//     feedback?: RouteFeedback
-//   }]
-// }>()
 
 const activeSlide = ref(0)
 const quickLogOpen = ref(false)
@@ -239,14 +218,6 @@ const summaryIcon = computed(() => {
 
   return 'hourglass_bottom'
 })
-
-// const saveQuickLog = async (payload: { log: Parameters<typeof saveLog>[0]['log'] }) => {
-//   const createdLog = await saveLog(payload)
-//   if (createdLog) {
-//     quickLogOpen.value = false
-//     emit('saved', { routeId: props.route.id, log: createdLog })
-//   }
-// }
 
 const formatDate = (value: string): string => {
   return new Intl.DateTimeFormat(undefined, {
