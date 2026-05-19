@@ -115,14 +115,15 @@
           <q-card-section>
             <div class="log-card-content">
               <div class="log-main">
-                <q-chip
-                  dense
-                  :color="logColor(log)"
-                  text-color="white"
-                  :icon="logIcon(log)"
-                >
-                  {{ logLabel(log) }}
-                </q-chip>
+                <div style="width: 7rem;">
+                  <q-chip
+                    :color="logColor(log)"
+                    text-color="white"
+                    :icon="logIcon(log)"
+                  >
+                    {{ logLabel(log) }}
+                  </q-chip>
+                </div>
 
                 <div>
                   <div class="text-subtitle1 text-weight-bold">

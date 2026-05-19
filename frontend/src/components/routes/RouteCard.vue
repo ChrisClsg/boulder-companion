@@ -72,7 +72,6 @@
     <q-card-section class="q-pt-sm q-pb-sm">
       <div class="row items-center q-gutter-sm">
         <q-chip
-          dense
           outline
           color="primary"
         >
@@ -82,8 +81,7 @@
         <q-chip
           v-for="type in route.holdTypes"
           :key="type"
-          dense
-          color="grey-2"
+          color="grey-3"
           text-color="grey-8"
         >
           {{ type }}
@@ -95,7 +93,6 @@
       <div class="personal-summary">
         <div class="summary-main">
           <q-chip
-            dense
             :color="summaryColor"
             text-color="white"
             :icon="summaryIcon"
@@ -107,17 +104,17 @@
             v-if="personalSummary.totalAttempts > 0"
             class="text-caption text-grey-6"
           >
-            {{ personalSummary.totalAttempts }}
-            {{ personalSummary.totalAttempts === 1 ? 'attempt' : 'attempts' }}
+            Logs: {{ personalSummary.totalAttempts }}
+          <div
+            v-if="personalSummary.lastLog"
+            class="text-caption text-grey-6"
+          >
+            Latest: {{ formatDate(personalSummary.lastLog.climbedAt) }}
+          </div>
           </span>
         </div>
 
-        <div
-          v-if="personalSummary.lastLog"
-          class="text-caption text-grey-6 q-mt-xs"
-        >
-          Last logged {{ formatDate(personalSummary.lastLog.climbedAt) }}
-        </div>
+
 
         <div
           v-if="feedback"
@@ -155,17 +152,23 @@
       class="q-pa-md q-pt-none"
     >
       <q-btn
-        :label="quickLogOpen ? 'Close' : 'Log'"
-        :icon="quickLogOpen ? 'expand_less' : 'add'"
         color="primary"
         outline
+        padding="xs sm"
         rounded
         @click.stop="quickLogOpen = !quickLogOpen"
-      />
+        >
+        <q-icon
+          :name="quickLogOpen ? 'expand_less' : 'add'"
+          size="xs"
+        />
+        <span>{{ quickLogOpen ? 'Close' : 'Add Log' }}</span>
+      </q-btn>
 
       <q-btn
         label="Details"
         color="primary"
+        padding="xs md"
         unelevated
         rounded
         :to="`/routes/${route.id}`"
@@ -217,7 +220,7 @@ const feedback = computed(() =>
 
 const summaryLabel = computed(() => {
   if (personalSummary.value.totalLogs === 0) {
-    return 'Not tried'
+    return 'Untouched'
   }
 
   if (personalSummary.value.flashed) {
@@ -233,7 +236,7 @@ const summaryLabel = computed(() => {
 
 const summaryColor = computed(() => {
   if (personalSummary.value.totalLogs === 0) {
-    return 'grey'
+    return 'blue-grey-4'
   }
 
   if (personalSummary.value.flashed) {
@@ -411,6 +414,7 @@ const formatDate = (value: string): string => {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  height: 2rem;
 }
 
 .feedback-mini {

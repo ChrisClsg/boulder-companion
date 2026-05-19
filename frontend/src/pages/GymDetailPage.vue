@@ -19,16 +19,6 @@
             {{ gym.name }}
           </h1>
         </div>
-
-        <q-btn
-          v-if="authStore.isAuthenticated"
-          label="Add Route"
-          color="primary"
-          unelevated
-          rounded
-          icon="add"
-          :to="`/gyms/${gym.id}/routes/new`"
-        />
       </section>
 
       <q-list class="gym-info-list">
