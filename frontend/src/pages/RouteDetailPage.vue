@@ -42,68 +42,154 @@
 
     <div v-else-if="routeData" class="route-detail-page">
       <div class="route-detail-grid">
-        <div class="grid-area-carousel">
-          <q-carousel
-            v-if="routeData.images?.length"
-            v-model="activeImage"
-            animated
-            swipeable
-            :arrows="routeData.images.length > 1"
-            :infinite="routeData.images.length > 1"
-            class="route-carousel"
-            control-color="white"
-          >
-            <q-carousel-slide
-              v-for="(img, index) in routeData.images"
-              :key="index"
-              :name="index"
-              :img-src="img.url"
-              class="route-slide"
+        <div class="route-detail-left">
+          <div class="grid-area-carousel">
+            <q-carousel
+              v-if="routeData.images?.length"
+              v-model="activeImage"
+              animated
+              swipeable
+              :arrows="routeData.images.length > 1"
+              :infinite="routeData.images.length > 1"
+              class="route-carousel"
+              control-color="white"
             >
-              <div class="absolute-top route-image-overlay" />
-
-              <q-chip
-                color="primary"
-                text-color="white"
-                class="absolute-top-right q-ma-md"
+              <q-carousel-slide
+                v-for="(img, index) in routeData.images"
+                :key="index"
+                :name="index"
+                :img-src="img.url"
+                class="route-slide"
               >
-                {{ routeData.difficulty.value }}
-              </q-chip>
+                <div class="absolute-top route-image-overlay" />
 
-              <q-chip
-                v-if="routeData.images.length > 1"
-                dense
-                color="black"
-                text-color="white"
-                class="absolute-bottom-right q-ma-md route-image-count"
-              >
-                {{ activeImage + 1 }} / {{ routeData.images.length }}
-              </q-chip>
+                <q-chip
+                  color="primary"
+                  text-color="white"
+                  class="absolute-top-right q-ma-md"
+                >
+                  {{ routeData.difficulty.value }}
+                </q-chip>
 
-              <div class="absolute-bottom route-image-caption">
-                <div class="route-image-title">
-                  {{ routeData.name }}
+                <q-chip
+                  v-if="routeData.images.length > 1"
+                  dense
+                  color="black"
+                  text-color="white"
+                  class="absolute-bottom-right q-ma-md route-image-count"
+                >
+                  {{ activeImage + 1 }} / {{ routeData.images.length }}
+                </q-chip>
+
+                <div class="absolute-bottom route-image-caption">
+                  <div class="route-image-title">
+                    {{ routeData.name }}
+                  </div>
+
+                  <div class="text-caption text-grey-3">
+                    {{ routeData.wall }}
+                  </div>
                 </div>
+              </q-carousel-slide>
+            </q-carousel>
 
-                <div class="text-caption text-grey-3">
-                  {{ routeData.wall }}
+            <div
+              v-else
+              class="route-image-placeholder"
+            >
+              <q-icon
+                name="image_not_supported"
+                size="56px"
+                color="grey-5"
+              />
+
+              <div class="text-body2 text-grey-6 q-mt-sm">
+                No images
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-area-logs">
+            <div class="logs-header">
+              <div>
+                <h2 class="section-title">
+                  Climb logs
+                </h2>
+
+                <div class="text-body2 text-grey-6">
+                  {{ logs.length }}
+                  {{ logs.length === 1 ? 'log' : 'logs' }} for this route
                 </div>
               </div>
-            </q-carousel-slide>
-          </q-carousel>
+            </div>
 
-          <div
-            v-else
-            class="route-image-placeholder"
-          >
-            <q-icon
-              name="image_not_supported"
-              size="56px"
-              color="grey-5"
-            />
+            <q-card
+              v-if="logs.length === 0"
+              flat
+              bordered
+              class="empty-logs-card text-center"
+            >
+              <q-card-section>
+                <q-icon
+                  name="timeline"
+                  size="48px"
+                  color="grey-5"
+                />
 
-            <div class="text-body2 text-grey-6 q-mt-sm">
-              No images
+                <div class="text-h6 q-mt-sm">
+                  No logs yet
+                </div>
+
+                <div class="text-body2 text-grey-6">
+                  Add your first climb log above.
+                </div>
+              </q-card-section>
+            </q-card>
+
+            <div v-else class="log-list">
+              <q-card
+                v-for="log in sortedLogs"
+                :key="log.id"
+                flat
+                bordered
+                class="log-card"
+              >
+                <q-card-section>
+                  <div class="log-card-content">
+                    <div class="log-main">
+                      <q-chip
+                        dense
+                        :color="logColor(log)"
+                        text-color="white"
+                        :icon="logIcon(log)"
+                      >
+                        {{ logLabel(log) }}
+                      </q-chip>
+
+                      <div>
+                        <div class="text-subtitle1 text-weight-bold">
+                          {{ log.attempts }}
+                          {{ log.attempts === 1 ? 'attempt' : 'attempts' }}
+                        </div>
+
+                        <div class="text-caption text-grey-6">
+                          {{ formatFullDate(log.climbedAt) }}
+                        </div>
+                      </div>
+                    </div>
+
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      color="negative"
+                      icon="delete_outline"
+                      :loading="deletingLogId === log.id"
+                      @click="deleteLog(log)"
+                    />
+                  </div>
+                </q-card-section>
+              </q-card>
             </div>
           </div>
         </div>
@@ -207,90 +293,6 @@
             :gym-id="routeData.gymId"
             class="q-mt-lg"
           />
-        </div>
-
-        <div class="grid-area-logs">
-          <div class="logs-header">
-            <div>
-              <h2 class="section-title">
-                Climb logs
-              </h2>
-
-              <div class="text-body2 text-grey-6">
-                {{ logs.length }}
-                {{ logs.length === 1 ? 'log' : 'logs' }} for this route
-              </div>
-            </div>
-          </div>
-
-          <q-card
-            v-if="logs.length === 0"
-            flat
-            bordered
-            class="empty-logs-card text-center"
-          >
-            <q-card-section>
-              <q-icon
-                name="timeline"
-                size="48px"
-                color="grey-5"
-              />
-
-              <div class="text-h6 q-mt-sm">
-                No logs yet
-              </div>
-
-              <div class="text-body2 text-grey-6">
-                Add your first climb log above.
-              </div>
-            </q-card-section>
-          </q-card>
-
-          <div v-else class="log-list">
-            <q-card
-              v-for="log in sortedLogs"
-              :key="log.id"
-              flat
-              bordered
-              class="log-card"
-            >
-              <q-card-section>
-                <div class="log-card-content">
-                  <div class="log-main">
-                    <q-chip
-                      dense
-                      :color="logColor(log)"
-                      text-color="white"
-                      :icon="logIcon(log)"
-                    >
-                      {{ logLabel(log) }}
-                    </q-chip>
-
-                    <div>
-                      <div class="text-subtitle1 text-weight-bold">
-                        {{ log.attempts }}
-                        {{ log.attempts === 1 ? 'attempt' : 'attempts' }}
-                      </div>
-
-                      <div class="text-caption text-grey-6">
-                        {{ formatFullDate(log.climbedAt) }}
-                      </div>
-                    </div>
-                  </div>
-
-                  <q-btn
-                    flat
-                    round
-                    dense
-                    color="negative"
-                    icon="delete_outline"
-                    :loading="deletingLogId === log.id"
-                    @click="deleteLog(log)"
-                  />
-                </div>
-              </q-card-section>
-            </q-card>
-          </div>
         </div>
       </div>
     </div>
@@ -514,32 +516,38 @@ onMounted(async () => {
 .route-detail-grid {
   display: grid;
   gap: 32px;
-  grid-template-areas:
-    'carousel'
-    'content'
-    'logs';
 }
 
-.grid-area-carousel { grid-area: carousel; min-width: 0; }
-.grid-area-content  { grid-area: content;  min-width: 0; padding-top: 12px; }
-.grid-area-logs     { grid-area: logs;     min-width: 0; }
+/* Unwrap on mobile so all three areas become direct grid items,
+   then use order to get the correct visual sequence */
+.route-detail-left {
+  display: contents;
+}
+
+.grid-area-carousel { order: 1; min-width: 0; }
+.grid-area-content  { order: 2; min-width: 0; padding-top: 12px; }
+.grid-area-logs     { order: 3; min-width: 0; }
 
 @media (min-width: 1024px) {
   .route-detail-grid {
     grid-template-columns: minmax(280px, 440px) minmax(0, 1fr);
     column-gap: 40px;
-    row-gap: 32px;
     align-items: start;
-    grid-template-areas:
-      'carousel content'
-      'logs     content';
+  }
+
+  /* Restore as real flex column on desktop — carousel and logs
+     are now an independent left column, unaffected by content height */
+  .route-detail-left {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    min-width: 0;
   }
 }
 
 @media (max-width: 599px) {
   .grid-area-carousel {
     width: calc(100% + 32px);
-    max-height: auto;
     margin-left: -16px;
     margin-right: -16px;
   }
