@@ -204,47 +204,11 @@
             </q-card-section>
           </q-card>
 
-          <q-list
-            bordered
-            separator
-            class="action-list q-mt-lg"
-          >
-            <q-expansion-item
-              :icon="personalSummary.topped ? 'add_task' : 'add'"
-              label="Add new log"
-              :caption="quickLogCaption"
-              :default-opened="!personalSummary.topped"
-              header-class="text-primary"
-              style="
-                background:
-                radial-gradient(circle at top right, rgba(25, 118, 210, 0.08), transparent 32%),
-                linear-gradient(180deg, #f8fafc, #f3f5f8);
-              "
-            >
-              <route-quick-log-panel
-                :route-id="routeData.id"
-                :gym-id="routeData.gymId"
-                :last-log="personalSummary.lastLog"
-                :existing-feedback="feedback"
-                :saving="climbLogStore.isSaving || routeFeedbackStore.isSaving"
-                @save="saveQuickLog"
-              />
-            </q-expansion-item>
-
-            <q-expansion-item
-              icon="rate_review"
-              label="Your feedback"
-              :caption="feedbackCaption"
-              :default-opened="!feedback"
-              header-class="text-primary"
-            >
-              <route-feedback-card
-                :feedback="feedback"
-                :saving="routeFeedbackStore.isSaving"
-                @save="saveFeedback"
-              />
-            </q-expansion-item>
-          </q-list>
+          <route-actions-panel
+            :route-id="routeData.id"
+            :gym-id="routeData.gymId"
+            class="q-mt-lg"
+          />
         </div>
 
         <!-- LEFT col bottom (desktop) / last section (mobile): climb logs -->
@@ -344,12 +308,10 @@ import { useAuthStore } from 'stores/authStore'
 import { useRouteStore } from 'src/stores/routeStore'
 import { useClimbLogStore } from 'src/stores/climbLogStore'
 import { useRouteFeedbackStore } from 'src/stores/routeFeedbackStore'
-import RouteQuickLogPanel from 'src/components/routes/RouteQuickLogPanel.vue'
-import RouteFeedbackCard from 'src/components/routes/RouteFeedbackCard.vue'
+import RouteActionsPanel from 'src/components/routes/RouteActionsPanel.vue'
 import { getErrorMessage } from 'src/utils/errors'
 import type {
   ClimbLog,
-  DifficultyFeedback,
   RoutePersonalSummary,
 } from 'src/types'
 
@@ -373,10 +335,6 @@ const routeData = computed(() => routeStore.currentRoute)
 
 const logs = computed(() =>
   climbLogStore.getLogsByRoute(routeId.value),
-)
-
-const feedback = computed(() =>
-  routeFeedbackStore.getFeedbackByRoute(routeId.value),
 )
 
 const fetchPageData = async () => {
@@ -458,74 +416,6 @@ const summaryIcon = computed(() => {
 
   return 'hourglass_bottom'
 })
-
-const quickLogCaption = computed(() => {
-  const last = personalSummary.value.lastLog
-  if (!last) return 'Add your first attempt'
-  const verb = last.flashed ? 'Flashed' : last.topped ? 'Topped' : 'Tried'
-  return `Last: ${verb} · ${last.attempts} ${last.attempts === 1 ? 'attempt' : 'attempts'} · ${formatFullDate(last.climbedAt)}`
-})
-
-const feedbackCaption = computed(() => {
-  if (!feedback.value) return 'Not rated yet'
-  const diff = feedback.value.difficultyFeedback.toLowerCase().replace(/_/g, ' ')
-  return `★ ${feedback.value.userRating} · Felt ${diff}`
-})
-
-const saveQuickLog = async (payload: {
-  log: {
-    routeId: string
-    gymId: string
-    sessionId: string | null
-    attempts: number
-    topped: boolean
-    climbedAt: string
-  }
-  feedback?: {
-    userRating: number
-    difficultyFeedback: DifficultyFeedback
-  }
-}) => {
-  try {
-    await climbLogStore.createLog(payload.log)
-
-    if (payload.feedback) {
-      await routeFeedbackStore.saveMyFeedback(
-        routeId.value,
-        payload.feedback,
-      )
-    }
-
-    $q.notify({
-      message: 'Climb logged',
-      type: 'positive',
-    })
-  } catch (err: unknown) {
-    $q.notify({
-      message: getErrorMessage(err, 'Failed to save climb log'),
-      type: 'negative',
-    })
-  }
-}
-
-const saveFeedback = async (payload: {
-  userRating: number
-  difficultyFeedback: DifficultyFeedback
-}) => {
-  try {
-    await routeFeedbackStore.saveMyFeedback(routeId.value, payload)
-
-    $q.notify({
-      message: 'Feedback saved',
-      type: 'positive',
-    })
-  } catch (err: unknown) {
-    $q.notify({
-      message: getErrorMessage(err, 'Failed to save feedback'),
-      type: 'negative',
-    })
-  }
-}
 
 const deleteLog = async (log: ClimbLog) => {
   deletingLogId.value = log.id
@@ -792,11 +682,6 @@ onMounted(async () => {
   margin-top: 4px;
   color: #667085;
   font-size: 0.86rem;
-}
-
-.action-list {
-  border-radius: 28px;
-  overflow: hidden;
 }
 
 /* ── Logs section ─────────────────────────────────────────── */

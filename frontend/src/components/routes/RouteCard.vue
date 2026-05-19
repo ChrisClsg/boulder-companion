@@ -140,8 +140,7 @@
           :route-id="route.id"
           :gym-id="route.gymId"
           :last-log="personalSummary.lastLog"
-          :existing-feedback="feedback"
-          :saving="climbLogStore.isSaving || routeFeedbackStore.isSaving"
+          :saving="isSaving"
           @save="saveQuickLog"
         />
       </q-slide-transition>
@@ -179,11 +178,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useQuasar } from 'quasar'
 import RouteQuickLogPanel from 'src/components/routes/RouteQuickLogPanel.vue'
-import { useClimbLogStore } from 'src/stores/climbLogStore'
-import { useRouteFeedbackStore } from 'src/stores/routeFeedbackStore'
-import { getErrorMessage } from 'src/utils/errors'
+import { useRouteActions } from 'src/composables/useRouteActions'
 import type {
   ClimbLog,
   DifficultyFeedback,
@@ -203,20 +199,11 @@ const emit = defineEmits<{
   }]
 }>()
 
-const $q = useQuasar()
-const climbLogStore = useClimbLogStore()
-const routeFeedbackStore = useRouteFeedbackStore()
-
 const activeSlide = ref(0)
 const quickLogOpen = ref(false)
 
-const personalSummary = computed(() =>
-  climbLogStore.getSummaryByRoute(props.route.id),
-)
-
-const feedback = computed(() =>
-  routeFeedbackStore.getFeedbackByRoute(props.route.id),
-)
+const { personalSummary, feedback, isSaving, saveLog } =
+  useRouteActions(() => props.route.id)
 
 const summaryLabel = computed(() => {
   if (personalSummary.value.totalLogs === 0) {
@@ -266,56 +253,11 @@ const summaryIcon = computed(() => {
   return 'hourglass_bottom'
 })
 
-const saveQuickLog = async (payload: {
-  log: {
-    routeId: string
-    gymId: string
-    sessionId: string | null
-    attempts: number
-    topped: boolean
-    climbedAt: string
-  }
-  feedback?: {
-    userRating: number
-    difficultyFeedback: DifficultyFeedback
-  }
-}) => {
-  try {
-    const createdLog = await climbLogStore.createLog(payload.log)
-
-    let savedFeedback: RouteFeedback | undefined
-
-    if (payload.feedback) {
-      savedFeedback = await routeFeedbackStore.saveMyFeedback(
-        props.route.id,
-        payload.feedback,
-      )
-    }
-
+const saveQuickLog = async (payload: { log: Parameters<typeof saveLog>[0]['log'] }) => {
+  const createdLog = await saveLog(payload)
+  if (createdLog) {
     quickLogOpen.value = false
-
-    $q.notify({
-      message: 'Climb logged',
-      type: 'positive',
-    })
-
-    if (savedFeedback) {
-      emit('saved', {
-        routeId: props.route.id,
-        log: createdLog,
-        feedback: savedFeedback,
-      })
-    } else {
-      emit('saved', {
-        routeId: props.route.id,
-        log: createdLog,
-      })
-    }
-  } catch (err: unknown) {
-    $q.notify({
-      message: getErrorMessage(err, 'Failed to save climb log'),
-      type: 'negative',
-    })
+    emit('saved', { routeId: props.route.id, log: createdLog })
   }
 }
 

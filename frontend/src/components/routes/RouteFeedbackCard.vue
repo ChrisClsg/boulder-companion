@@ -1,18 +1,6 @@
 <template>
   <q-card flat bordered class="feedback-card">
-    <q-card-section>
-      <div class="card-header">
-        <div>
-          <div class="text-overline text-primary">
-            Feedback
-          </div>
-
-          <h2>Your route feedback</h2>
-        </div>
-
-        <q-icon name="reviews" color="primary" size="30px" />
-      </div>
-
+    <q-card-section class="feedback-card-section">
       <p class="text-body2 text-grey-7 q-mt-sm">
         Rate this route once. You can update your feedback anytime.
       </p>
@@ -133,10 +121,12 @@ const save = () => {
 
 <style scoped>
 .feedback-card {
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at top right, rgba(25, 118, 210, 0.08), transparent 34%),
-    linear-gradient(180deg, #ffffff, #fafbfc);
+  background: inherit;
+  border: none;
+}
+
+.feedback-card-section {
+  padding: 1rem !important;
 }
 
 .feedback-card .q-card__section {
