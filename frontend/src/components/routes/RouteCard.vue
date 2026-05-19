@@ -121,6 +121,7 @@
           :route-id="route.id"
           :gym-id="route.gymId"
           :open-feedback="false"
+          :open-log="true"
           class="q-mt-lg"
         />
       </q-slide-transition>

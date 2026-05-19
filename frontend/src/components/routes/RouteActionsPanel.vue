@@ -49,12 +49,13 @@ const props = defineProps<{
   routeId: string
   gymId: string
   openFeedback?: boolean
+  openLog?: boolean
 }>()
 
 const { personalSummary, feedback, lastLog, isSaving, saveLog, saveFeedback } =
   useRouteActions(() => props.routeId)
 
-const logOpen = ref(!personalSummary.value.topped)
+const logOpen = ref((props.openLog ?? true) || !personalSummary.value.topped)
 const feedbackOpen = ref((props.openFeedback ?? true) && !feedback.value)
 
 const quickLogCaption = computed(() => {
