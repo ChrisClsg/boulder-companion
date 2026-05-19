@@ -85,7 +85,6 @@ export type CreateClimbLogPayload = {
   routeId: string
   sessionId?: string | null
   topped: boolean
-  flashed: boolean
   attempts: number
   climbedAt: string
 }

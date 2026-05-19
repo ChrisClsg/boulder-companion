@@ -7,7 +7,6 @@ public record CreateClimbLogRequest(
     String routeId,
     String sessionId,
     boolean topped,
-    boolean flashed,
     int attempts,
     Instant climbedAt
 ) {}

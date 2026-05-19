@@ -52,7 +52,7 @@
           round
           flat
           icon="remove"
-          :disable="attempts <= 1 || result === 'flashed'"
+          :disable="attempts <= 1"
           @click.stop="attempts--"
         />
 
@@ -65,19 +65,10 @@
           round
           flat
           icon="add"
-          :disable="result === 'flashed'"
           @click.stop="attempts++"
         />
       </div>
     </div>
-
-    <q-banner
-      v-if="result === 'flashed'"
-      rounded
-      class="q-mt-md bg-primary text-white"
-    >
-      Flash means topped on your first attempt.
-    </q-banner>
 
     <q-separator class="q-my-md" />
 
@@ -198,7 +189,6 @@ const emit = defineEmits<{
       sessionId: string | null
       attempts: number
       topped: boolean
-      flashed: boolean
       climbedAt: string
     }
     feedback?: {
@@ -208,7 +198,7 @@ const emit = defineEmits<{
   }]
 }>()
 
-const result = ref<'attempted' | 'topped' | 'flashed'>('topped')
+const result = ref<'attempted' | 'topped'>('topped')
 const attempts = ref(1)
 
 const addingFeedback = ref(false)
@@ -226,10 +216,6 @@ const resultOptions = [
   {
     label: 'Topped',
     value: 'topped',
-  },
-  {
-    label: 'Flash',
-    value: 'flashed',
   },
 ]
 
@@ -255,12 +241,6 @@ const difficultyOptions = [
     value: 'MUCH_HARDER',
   },
 ]
-
-watch(result, (value) => {
-  if (value === 'flashed') {
-    attempts.value = 1
-  }
-})
 
 watch(
   () => props.existingFeedback,
@@ -326,8 +306,7 @@ const save = () => {
     gymId: props.gymId,
     sessionId: null,
     attempts: attempts.value,
-    topped: result.value === 'topped' || result.value === 'flashed',
-    flashed: result.value === 'flashed',
+    topped: result.value === 'topped',
     climbedAt: new Date().toISOString(),
   }
 

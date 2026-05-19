@@ -438,7 +438,6 @@ const saveQuickLog = async (payload: {
     sessionId: string | null
     attempts: number
     topped: boolean
-    flashed: boolean
     climbedAt: string
   }
   feedback?: {

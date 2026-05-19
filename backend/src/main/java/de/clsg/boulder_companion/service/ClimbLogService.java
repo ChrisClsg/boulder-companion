@@ -56,6 +56,11 @@ public class ClimbLogService {
     ) {
         validateCreateRequest(request);
 
+        boolean previousLogsExist = climbLogRepository
+                .existsByUserIdAndRouteIdAndClimbedAtBefore(userId, request.routeId(), request.climbedAt());
+
+        boolean flashed = request.topped() && request.attempts() == 1 && !previousLogsExist;
+
         ClimbLog climbLog = new ClimbLog(
                 null,
                 userId,
@@ -63,9 +68,9 @@ public class ClimbLogService {
                 request.routeId(),
                 request.sessionId(),
                 request.topped(),
-                request.flashed(),
+                flashed,
                 request.attempts(),
-                request.climbedAt() != null ? request.climbedAt() : Instant.now(),
+                request.climbedAt(),
                 null
         );
 
@@ -132,8 +137,11 @@ public class ClimbLogService {
             throw new IllegalArgumentException("Route id is required");
         }
 
+        if (request.climbedAt() == null) {
+            throw new IllegalArgumentException("climbedAt is required");
+        }
+
         validateAttempts(request.attempts());
-        validateFlashed(request.topped(), request.flashed(), request.attempts());
     }
 
     private void validateAttempts(int attempts) {
