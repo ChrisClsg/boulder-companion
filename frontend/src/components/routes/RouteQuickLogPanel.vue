@@ -1,6 +1,6 @@
 <template>
   <div class="quick-log-panel">
-    <div class="quick-log-title-row">
+    <!-- <div class="quick-log-title-row">
       <div>
         <div class="text-subtitle2">
           Add new log
@@ -16,10 +16,10 @@
       </div>
 
       <q-icon name="add_circle" color="primary" size="26px" />
-    </div>
+    </div> -->
 
     <div class="q-mt-md">
-      <div class="text-caption text-grey-7 q-mb-sm">
+      <div class="text-subtitle2 q-mb-sm">
         Result
       </div>
 
@@ -268,21 +268,21 @@ const canSave = computed(() =>
   attempts.value >= 1 && feedbackIsValid.value,
 )
 
-const lastLogLabel = computed(() => {
-  if (!props.lastLog) {
-    return ''
-  }
+// const lastLogLabel = computed(() => {
+//   if (!props.lastLog) {
+//     return ''
+//   }
 
-  const status = props.lastLog.flashed
-    ? 'Flash'
-    : props.lastLog.topped
-      ? 'Topped'
-      : 'Tried'
+//   const status = props.lastLog.flashed
+//     ? 'Flash'
+//     : props.lastLog.topped
+//       ? 'Topped'
+//       : 'Tried'
 
-  return `${status} · ${props.lastLog.attempts} ${
-    props.lastLog.attempts === 1 ? 'attempt' : 'attempts'
-  }`
-})
+//   return `${status} · ${props.lastLog.attempts} ${
+//     props.lastLog.attempts === 1 ? 'attempt' : 'attempts'
+//   }`
+// })
 
 const difficultyLabel = (value: DifficultyFeedback): string => {
   const labels: Record<DifficultyFeedback, string> = {
@@ -331,10 +331,10 @@ const save = () => {
 <style scoped>
 .quick-log-panel {
   padding: 16px;
-  border-radius: 22px;
-  background:
+  /* border-radius: 22px; */
+  /* background:
     radial-gradient(circle at top right, rgba(25, 118, 210, 0.08), transparent 32%),
-    linear-gradient(180deg, #f8fafc, #f3f5f8);
+    linear-gradient(180deg, #f8fafc, #f3f5f8); */
 }
 
 .quick-log-title-row,

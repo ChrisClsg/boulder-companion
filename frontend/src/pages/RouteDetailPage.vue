@@ -1,6 +1,6 @@
 <template>
   <q-page
-    :class="`${$q.screen.lt.md ? 'q-pt-none' : ''}`"
+    :class="`${$q.screen.lt.sm ? 'q-pt-none' : ''}`"
     padding
   >
     <div v-if="loading" class="state state--loading">
@@ -41,8 +41,9 @@
     </q-card>
 
     <div v-else-if="routeData" class="route-detail-page">
-      <section class="route-hero">
-        <div class="route-hero-media">
+      <div class="route-detail-grid">
+        <!-- LEFT col (desktop): carousel -->
+        <div class="grid-area-carousel">
           <q-carousel
             v-if="routeData.images?.length"
             v-model="activeImage"
@@ -108,7 +109,8 @@
           </div>
         </div>
 
-        <div class="route-hero-content">
+        <!-- RIGHT col (desktop): metadata + summary + collapsible actions -->
+        <div class="grid-area-content">
           <div class="text-overline text-primary">
             Boulder Route
           </div>
@@ -163,147 +165,173 @@
             </div>
           </div>
 
-          <div class="side-grid q-mt-xl">
-            <q-card flat bordered class="summary-card">
-              <q-card-section>
-                <div class="card-header">
-                  <div>
-                    <div class="text-overline text-primary">
-                      Your progress
-                    </div>
-
-                    <h2>{{ summaryLabel }}</h2>
-                  </div>
-
-                  <q-icon
-                    :name="summaryIcon"
-                    :color="summaryColor"
-                    size="34px"
-                  />
-                </div>
-
-                <div class="summary-stats q-mt-md">
-                  <div>
-                    <strong>{{ personalSummary.totalLogs }}</strong>
-                    <span>logs</span>
-                  </div>
-
-                  <div>
-                    <strong>{{ personalSummary.totalAttempts }}</strong>
-                    <span>attempts</span>
-                  </div>
-                </div>
-
-                <div
-                  v-if="personalSummary.lastLog"
-                  class="text-body2 text-grey-7 q-mt-md"
-                >
-                  Last logged {{ formatFullDate(personalSummary.lastLog.climbedAt) }}
-                </div>
-              </q-card-section>
-            </q-card>
-
-            <route-quick-log-panel
-              :route-id="routeData.id"
-              :gym-id="routeData.gymId"
-              :last-log="personalSummary.lastLog"
-              :existing-feedback="feedback"
-              :saving="climbLogStore.isSaving || routeFeedbackStore.isSaving"
-              @save="saveQuickLog"
-            />
-
-            <route-feedback-card
-              :feedback="feedback"
-              :saving="routeFeedbackStore.isSaving"
-              @save="saveFeedback"
-            />
-          </div>
-        </div>
-      </section>
-
-      <section class="logs-section">
-        <div class="logs-header">
-          <div>
-            <h2 class="section-title">
-              Climb logs
-            </h2>
-
-            <div class="text-body2 text-grey-6">
-              {{ logs.length }}
-              {{ logs.length === 1 ? 'log' : 'logs' }} for this route
-            </div>
-          </div>
-        </div>
-
-        <q-card
-          v-if="logs.length === 0"
-          flat
-          bordered
-          class="empty-logs-card text-center"
-        >
-          <q-card-section>
-            <q-icon
-              name="timeline"
-              size="48px"
-              color="grey-5"
-            />
-
-            <div class="text-h6 q-mt-sm">
-              No logs yet
-            </div>
-
-            <div class="text-body2 text-grey-6">
-              Add your first climb log above.
-            </div>
-          </q-card-section>
-        </q-card>
-
-        <div v-else class="log-list">
-          <q-card
-            v-for="log in sortedLogs"
-            :key="log.id"
-            flat
-            bordered
-            class="log-card"
-          >
+          <q-card flat bordered class="summary-card q-mt-xl">
             <q-card-section>
-              <div class="log-card-content">
-                <div class="log-main">
-                  <q-chip
-                    dense
-                    :color="logColor(log)"
-                    text-color="white"
-                    :icon="logIcon(log)"
-                  >
-                    {{ logLabel(log) }}
-                  </q-chip>
-
-                  <div>
-                    <div class="text-subtitle1 text-weight-bold">
-                      {{ log.attempts }}
-                      {{ log.attempts === 1 ? 'attempt' : 'attempts' }}
-                    </div>
-
-                    <div class="text-caption text-grey-6">
-                      {{ formatFullDate(log.climbedAt) }}
-                    </div>
+              <div class="card-header">
+                <div>
+                  <div class="text-overline text-primary">
+                    Your progress
                   </div>
+
+                  <h2>{{ summaryLabel }}</h2>
                 </div>
 
-                <q-btn
-                  flat
-                  round
-                  dense
-                  color="negative"
-                  icon="delete_outline"
-                  :loading="deletingLogId === log.id"
-                  @click="deleteLog(log)"
+                <q-icon
+                  :name="summaryIcon"
+                  :color="summaryColor"
+                  size="34px"
                 />
+              </div>
+
+              <div class="summary-stats q-mt-md">
+                <div>
+                  <strong>{{ personalSummary.totalLogs }}</strong>
+                  <span>logs</span>
+                </div>
+
+                <div>
+                  <strong>{{ personalSummary.totalAttempts }}</strong>
+                  <span>attempts</span>
+                </div>
+              </div>
+
+              <div
+                v-if="personalSummary.lastLog"
+                class="text-body2 text-grey-7 q-mt-md"
+              >
+                Last logged {{ formatFullDate(personalSummary.lastLog.climbedAt) }}
               </div>
             </q-card-section>
           </q-card>
+
+          <q-list
+            bordered
+            separator
+            class="action-list q-mt-lg"
+          >
+            <q-expansion-item
+              :icon="personalSummary.topped ? 'add_task' : 'add'"
+              label="Add new log"
+              :caption="quickLogCaption"
+              :default-opened="!personalSummary.topped"
+              header-class="text-primary"
+              style="
+                background:
+                radial-gradient(circle at top right, rgba(25, 118, 210, 0.08), transparent 32%),
+                linear-gradient(180deg, #f8fafc, #f3f5f8);
+              "
+            >
+              <route-quick-log-panel
+                :route-id="routeData.id"
+                :gym-id="routeData.gymId"
+                :last-log="personalSummary.lastLog"
+                :existing-feedback="feedback"
+                :saving="climbLogStore.isSaving || routeFeedbackStore.isSaving"
+                @save="saveQuickLog"
+              />
+            </q-expansion-item>
+
+            <q-expansion-item
+              icon="rate_review"
+              label="Your feedback"
+              :caption="feedbackCaption"
+              :default-opened="!feedback"
+              header-class="text-primary"
+            >
+              <route-feedback-card
+                :feedback="feedback"
+                :saving="routeFeedbackStore.isSaving"
+                @save="saveFeedback"
+              />
+            </q-expansion-item>
+          </q-list>
         </div>
-      </section>
+
+        <!-- LEFT col bottom (desktop) / last section (mobile): climb logs -->
+        <div class="grid-area-logs">
+          <div class="logs-header">
+            <div>
+              <h2 class="section-title">
+                Climb logs
+              </h2>
+
+              <div class="text-body2 text-grey-6">
+                {{ logs.length }}
+                {{ logs.length === 1 ? 'log' : 'logs' }} for this route
+              </div>
+            </div>
+          </div>
+
+          <q-card
+            v-if="logs.length === 0"
+            flat
+            bordered
+            class="empty-logs-card text-center"
+          >
+            <q-card-section>
+              <q-icon
+                name="timeline"
+                size="48px"
+                color="grey-5"
+              />
+
+              <div class="text-h6 q-mt-sm">
+                No logs yet
+              </div>
+
+              <div class="text-body2 text-grey-6">
+                Add your first climb log above.
+              </div>
+            </q-card-section>
+          </q-card>
+
+          <div v-else class="log-list">
+            <q-card
+              v-for="log in sortedLogs"
+              :key="log.id"
+              flat
+              bordered
+              class="log-card"
+            >
+              <q-card-section>
+                <div class="log-card-content">
+                  <div class="log-main">
+                    <q-chip
+                      dense
+                      :color="logColor(log)"
+                      text-color="white"
+                      :icon="logIcon(log)"
+                    >
+                      {{ logLabel(log) }}
+                    </q-chip>
+
+                    <div>
+                      <div class="text-subtitle1 text-weight-bold">
+                        {{ log.attempts }}
+                        {{ log.attempts === 1 ? 'attempt' : 'attempts' }}
+                      </div>
+
+                      <div class="text-caption text-grey-6">
+                        {{ formatFullDate(log.climbedAt) }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <q-btn
+                    flat
+                    round
+                    dense
+                    color="negative"
+                    icon="delete_outline"
+                    :loading="deletingLogId === log.id"
+                    @click="deleteLog(log)"
+                  />
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
@@ -429,6 +457,19 @@ const summaryIcon = computed(() => {
   }
 
   return 'hourglass_bottom'
+})
+
+const quickLogCaption = computed(() => {
+  const last = personalSummary.value.lastLog
+  if (!last) return 'Add your first attempt'
+  const verb = last.flashed ? 'Flashed' : last.topped ? 'Topped' : 'Tried'
+  return `Last: ${verb} · ${last.attempts} ${last.attempts === 1 ? 'attempt' : 'attempts'} · ${formatFullDate(last.climbedAt)}`
+})
+
+const feedbackCaption = computed(() => {
+  if (!feedback.value) return 'Not rated yet'
+  const diff = feedback.value.difficultyFeedback.toLowerCase().replace(/_/g, ' ')
+  return `★ ${feedback.value.userRating} · Felt ${diff}`
 })
 
 const saveQuickLog = async (payload: {
@@ -581,16 +622,52 @@ onMounted(async () => {
   padding: 20px;
 }
 
-.route-hero {
+/* ── Grid layout ──────────────────────────────────────────── */
+
+.route-detail-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 440px) minmax(0, 1fr);
-  gap: 40px;
-  align-items: start;
+  gap: 32px;
+  grid-template-areas:
+    'carousel'
+    'content'
+    'logs';
 }
 
-.route-hero-media {
-  min-width: 0;
+.grid-area-carousel { grid-area: carousel; min-width: 0; }
+.grid-area-content  { grid-area: content;  min-width: 0; padding-top: 12px; }
+.grid-area-logs     { grid-area: logs;     min-width: 0; }
+
+@media (min-width: 1024px) {
+  .route-detail-grid {
+    grid-template-columns: minmax(280px, 440px) minmax(0, 1fr);
+    column-gap: 40px;
+    row-gap: 32px;
+    align-items: start;
+    grid-template-areas:
+      'carousel content'
+      'logs     content';
+  }
 }
+
+@media (max-width: 599px) {
+  .grid-area-carousel {
+    width: calc(100% + 32px);
+    max-height: auto;
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+
+  .route-carousel,
+  .route-image-placeholder {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .route-title-block { display: none; }
+  .grid-area-content { padding-top: 0; }
+}
+
+/* ── Carousel ─────────────────────────────────────────────── */
 
 .route-carousel {
   aspect-ratio: 4 / 5;
@@ -646,10 +723,7 @@ onMounted(async () => {
     linear-gradient(135deg, #f5f7fb, #e8eef8);
 }
 
-.route-hero-content {
-  min-width: 0;
-  padding-top: 12px;
-}
+/* ── Content column ───────────────────────────────────────── */
 
 .route-title {
   margin: 0;
@@ -663,11 +737,6 @@ onMounted(async () => {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-.side-grid {
-  display: grid;
-  gap: 18px;
 }
 
 .summary-card {
@@ -725,9 +794,12 @@ onMounted(async () => {
   font-size: 0.86rem;
 }
 
-.logs-section {
-  margin-top: 56px;
+.action-list {
+  border-radius: 28px;
+  overflow: hidden;
 }
+
+/* ── Logs section ─────────────────────────────────────────── */
 
 .logs-header {
   display: flex;
@@ -775,42 +847,7 @@ onMounted(async () => {
   gap: 16px;
 }
 
-@media (max-width: 900px) {
-  .route-hero {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
-  .route-hero-media {
-    max-width: none;
-    width: calc(100% + 32px);
-    margin-left: -16px;
-    margin-right: -16px;
-  }
-
-  .route-carousel {
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .route-image-placeholder {
-    border-radius: 0;
-  }
-
-  .route-title-block {
-    display: none;
-  }
-
-  .route-hero-content {
-    padding-top: 0;
-  }
-}
-
-@media (max-width: 600px) {
-  .logs-section {
-    margin-top: 40px;
-  }
-
+@media (max-width: 599px) {
   .log-card-content,
   .log-main {
     align-items: flex-start;
