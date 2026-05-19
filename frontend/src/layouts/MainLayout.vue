@@ -17,10 +17,15 @@
           class="app-brand"
           @click="$router.push('/')"
         >
-          <div class="app-brand__mark">
-            <q-icon name="terrain" size="18px" />
-          </div>
-          <span class="app-brand__name">
+          <q-img
+            src="~assets/boulder_companion_logo.png"
+            alt="Boulder Companion Logo"
+            class="app-brand__mark"
+          />
+          <span
+            class="app-brand__name"
+            v-if="$q.screen.gt.xs"
+          >
             Boulder<span class="app-brand__accent">Companion</span>
           </span>
         </div>
@@ -140,14 +145,10 @@ async function handleLogout() {
 }
 
 .app-brand__mark {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: rgba(25, 118, 210, 0.1);
-  color: #1976d2;
-  flex-shrink: 0;
+  width: 5rem;
+  height: auto;
+  top: 1rem;
+  z-index: 10000;
 }
 
 .app-brand__name {
@@ -156,6 +157,7 @@ async function handleLogout() {
   letter-spacing: -0.04em;
   line-height: 1;
   color: #0f172a;
+  /* margin-left: 5rem; */
 }
 
 .app-brand__accent {

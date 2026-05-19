@@ -1,9 +1,11 @@
 <template>
   <div class="drawer-inner">
     <div class="drawer-brand">
-      <div class="drawer-brand__mark">
-        <q-icon name="terrain" size="22px" />
-      </div>
+      <q-img
+        alt="Boulder Companion Logo"
+        class="drawer-brand__mark"
+        src="~assets/boulder_companion_logo.png"
+      />
       <div class="drawer-brand__text">
         <span class="drawer-brand__name">Boulder</span>
         <span class="drawer-brand__sub">Companion</span>
@@ -63,25 +65,21 @@ const linksList: AppDrawerLinkProps[] = [
 
 .drawer-brand {
   display: flex;
-  align-items: center;
+  align-items: start;
   gap: 14px;
-  padding: 22px 20px 20px;
+  padding: 1.5rem 20px 1.5rem;
   background:
     radial-gradient(circle at top right, rgba(25, 118, 210, 0.12), transparent 55%),
     linear-gradient(180deg, #f0f6ff, #f8fafc);
   border-bottom: 1px solid rgba(25, 118, 210, 0.1);
+  height: 13rem;
 }
 
 .drawer-brand__mark {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  border-radius: 14px;
-  background: rgba(25, 118, 210, 0.14);
-  color: #1976d2;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.15);
+  position: absolute;
+  top: inherit;
+  width: 9rem;
+  height: 10rem;
 }
 
 .drawer-brand__text {
@@ -91,19 +89,25 @@ const linksList: AppDrawerLinkProps[] = [
 }
 
 .drawer-brand__name {
-  font-size: 1.05rem;
+  font-size: 1.05em;
   font-weight: 850;
   letter-spacing: -0.04em;
   color: #0f172a;
+  position: absolute;
+  top: 8rem;
+  left: 9rem;
 }
 
 .drawer-brand__sub {
+  position: absolute;
+  top: 9rem;
+  left: 7rem;
   margin-top: 3px;
-  font-size: 0.72rem;
+  font-size: 1.5em;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #64748b;
+  color: #1976d2;
 }
 
 .drawer-section-label {
