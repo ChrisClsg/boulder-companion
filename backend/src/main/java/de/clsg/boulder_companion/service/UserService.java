@@ -30,11 +30,6 @@ public class UserService {
     this.authService = authService;
   }
 
-  public UserDto getCurrentUser(OAuth2User principal) {
-    User user = authService.getOrCreateUser(principal);
-    return UserDto.fromUser(user);
-  }
-
   public List<GymDto> getFavoriteGyms(OAuth2User principal) {
       User user = authService.getOrCreateUser(principal);
 

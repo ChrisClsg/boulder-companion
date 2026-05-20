@@ -2,7 +2,6 @@ package de.clsg.boulder_companion.controller;
 
 import de.clsg.boulder_companion.dto.climblog.ClimbLogDto;
 import de.clsg.boulder_companion.dto.climblog.CreateClimbLogRequest;
-import de.clsg.boulder_companion.dto.climblog.UpdateClimbLogRequest;
 import de.clsg.boulder_companion.service.ClimbLogService;
 import de.clsg.boulder_companion.service.CurrentUserService;
 import org.springframework.http.ResponseEntity;
@@ -50,17 +49,6 @@ public class ClimbLogController {
         return ResponseEntity.ok(logs);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ClimbLogDto> getClimbLogById(
-            @PathVariable String id
-    ) {
-        String userId = currentUserService.getCurrentUserId();
-
-        return climbLogService.getClimbLogById(userId, id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
     @PostMapping
     public ResponseEntity<ClimbLogDto> createClimbLog(
             @RequestBody CreateClimbLogRequest request
@@ -70,18 +58,6 @@ public class ClimbLogController {
         ClimbLogDto createdLog = climbLogService.createClimbLog(userId, request);
 
         return ResponseEntity.ok(createdLog);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ClimbLogDto> updateClimbLog(
-            @PathVariable String id,
-            @RequestBody UpdateClimbLogRequest request
-    ) {
-        String userId = currentUserService.getCurrentUserId();
-
-        ClimbLogDto updatedLog = climbLogService.updateClimbLog(userId, id, request);
-
-        return ResponseEntity.ok(updatedLog);
     }
 
     @DeleteMapping("/{id}")

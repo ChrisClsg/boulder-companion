@@ -21,12 +21,6 @@ public class UserController {
     this.userService = userService;
   }
 
-  @GetMapping("/me")
-  public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal OAuth2User principal) {
-    UserDto user = userService.getCurrentUser(principal);
-    return ResponseEntity.ok(user);
-  }
-
   @GetMapping("/me/favorite-gyms")
   public ResponseEntity<List<GymDto>> getFavoriteGyms(
       @AuthenticationPrincipal OAuth2User principal
