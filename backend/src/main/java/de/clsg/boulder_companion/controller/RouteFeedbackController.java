@@ -27,7 +27,7 @@ public class RouteFeedbackController {
         String userId = currentUserService.getCurrentUserId();
         return routeFeedbackService.getMyFeedback(userId, routeId)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PutMapping

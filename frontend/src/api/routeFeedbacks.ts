@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios'
 import { api } from 'src/boot/axios'
 import type {
   RouteFeedback,
@@ -8,19 +7,13 @@ import type {
 export const routeFeedbackApi = {
   async getMyFeedback(routeId: string): Promise<RouteFeedback | null> {
     try {
-      const response = await api.get<RouteFeedback>(
+      const response = await api.get<RouteFeedback | undefined>(
         `/routes/${routeId}/my-feedback`,
       )
 
-      return response.data
+      return response.status === 204 ? null : response.data ?? null
     } catch (error: unknown) {
-      if (
-        error instanceof AxiosError &&
-        error.response?.status === 404
-      ) {
-        return null
-      }
-
+      console.error("Failed to load route feedback", error)
       throw error
     }
   },
