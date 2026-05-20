@@ -1,9 +1,5 @@
 import { api } from 'src/boot/axios'
-import type {
-  ClimbLog,
-  CreateClimbLogPayload,
-  UpdateClimbLogPayload,
-} from 'src/types'
+import type { ClimbLog, CreateClimbLogPayload } from 'src/types'
 
 export const climbLogApi = {
   async getAll(params?: {
@@ -21,20 +17,8 @@ export const climbLogApi = {
     return response.data
   },
 
-  async getByRoute(routeId: string): Promise<ClimbLog[]> {
-    return this.getAll({ routeId })
-  },
-
   async create(payload: CreateClimbLogPayload): Promise<ClimbLog> {
     const response = await api.post<ClimbLog>('/climb-logs', payload)
-    return response.data
-  },
-
-  async update(
-    id: string,
-    payload: UpdateClimbLogPayload,
-  ): Promise<ClimbLog> {
-    const response = await api.put<ClimbLog>(`/climb-logs/${id}`, payload)
     return response.data
   },
 

@@ -10,18 +10,7 @@ export const useFavoriteStore = defineStore('favorites', {
     error: null as string | null,
   }),
 
-  getters: {
-    favoriteGymIds: (state): string[] =>
-      state.favoriteGyms.map((gym) => gym.id),
-
-    favoriteGymsCount: (state): number =>
-      state.favoriteGyms.length,
-
-    isFavoriteGym: (state) => {
-      return (gymId: string): boolean =>
-        state.favoriteGyms.some((gym) => gym.id === gymId)
-    },
-  },
+  getters: {},
 
   actions: {
     async fetchFavoriteGyms(): Promise<Gym[]> {
@@ -40,40 +29,5 @@ export const useFavoriteStore = defineStore('favorites', {
       }
     },
 
-    async addFavoriteGym(gymId: string): Promise<void> {
-      this.error = null
-
-      try {
-        const gyms = await favoriteApi.addFavoriteGym(gymId)
-        this.favoriteGyms = gyms
-      } catch (error: unknown) {
-        this.error = getErrorMessage(error, 'Failed to add favorite gym')
-        throw error
-      }
-    },
-
-    async removeFavoriteGym(gymId: string): Promise<void> {
-      this.error = null
-
-      try {
-        const gyms = await favoriteApi.removeFavoriteGym(gymId)
-        this.favoriteGyms = gyms
-      } catch (error: unknown) {
-        this.error = getErrorMessage(error, 'Failed to remove favorite gym')
-        throw error
-      }
-    },
-
-    async toggleFavoriteGym(gymId: string): Promise<void> {
-      if (this.isFavoriteGym(gymId)) {
-        await this.removeFavoriteGym(gymId)
-      } else {
-        await this.addFavoriteGym(gymId)
-      }
-    },
-
-    clearError(): void {
-      this.error = null
-    },
   },
 })

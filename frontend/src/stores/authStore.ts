@@ -11,15 +11,7 @@ export const useAuthStore = defineStore('auth', {
     hasFetchedUser: false,
   }),
 
-  getters: {
-    hasRole: (state) => {
-      return (role: string) => state.user?.role === role
-    },
-
-    isClimber: (state) => state.user?.role === 'CLIMBER',
-    isAdmin: (state) => state.user?.role === 'GYM_ADMIN',
-    isRouteSetter: (state) => state.user?.role === 'ROUTE_SETTER',
-  },
+  getters: {},
 
   actions: {
     async initAuth() {
@@ -52,11 +44,6 @@ export const useAuthStore = defineStore('auth', {
 
         return null
       }
-    },
-
-    async refreshUser() {
-      this.hasFetchedUser = false
-      return this.fetchUser()
     },
 
     loginWithGithub() {

@@ -37,7 +37,4 @@ export const routeFeedbackApi = {
     return response.data
   },
 
-  async deleteMyFeedback(routeId: string): Promise<void> {
-    await api.delete(`/routes/${routeId}/my-feedback`)
-  },
 }

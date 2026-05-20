@@ -69,20 +69,5 @@ export const useRouteFeedbackStore = defineStore('routeFeedbacks', {
       }
     },
 
-    async deleteMyFeedback(routeId: string): Promise<void> {
-      this.error = null
-
-      try {
-        await routeFeedbackApi.deleteMyFeedback(routeId)
-        this.feedbackByRouteId[routeId] = null
-      } catch (error: unknown) {
-        this.error = getErrorMessage(error, 'Failed to delete route feedback')
-        throw error
-      }
-    },
-
-    clearError(): void {
-      this.error = null
-    },
   },
 })

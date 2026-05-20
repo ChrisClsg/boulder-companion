@@ -6,5 +6,3 @@ export { climbLogApi } from './climbLogs'
 export { routeFeedbackApi } from './routeFeedbacks'
 export { favoriteApi } from './favorites'
 
-export type { CreateGymPayload, UpdateGymPayload } from './gyms'
-export type { CreateRoutePayload, UpdateRoutePayload } from './routes'

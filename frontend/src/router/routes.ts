@@ -17,23 +17,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/GymsListPage.vue'),
       },
       {
-        path: 'gyms/new',
-        name: 'GymCreate',
-        component: () => import('pages/GymCreatePage.vue'),
-      },
-      {
         path: 'gyms/:id',
         name: 'GymDetail',
         component: () => import('pages/GymDetailPage.vue'),
         props: true,
       },
-      {
-        path: 'gyms/:id/edit',
-        name: 'GymEdit',
-        component: () => import('pages/GymEditPage.vue'),
-        props: true,
-      },
-
       {
         path: 'routes',
         name: 'RoutesList',

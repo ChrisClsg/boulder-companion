@@ -4,7 +4,6 @@ import type {
   ClimbLog,
   CreateClimbLogPayload,
   RoutePersonalSummary,
-  UpdateClimbLogPayload,
 } from 'src/types'
 import { getErrorMessage } from 'src/utils/errors'
 
@@ -20,7 +19,6 @@ type FetchClimbLogsParams = {
 export const useClimbLogStore = defineStore('climbLogs', {
   state: () => ({
     logs: [] as ClimbLog[],
-    currentLog: null as ClimbLog | null,
     isLoading: false,
     isSaving: false,
     error: null as string | null,
@@ -30,27 +28,6 @@ export const useClimbLogStore = defineStore('climbLogs', {
     getLogsByRoute: (state) => {
       return (routeId: string): ClimbLog[] =>
         state.logs.filter(log => log.routeId === routeId)
-    },
-
-    getLogsByGym: (state) => {
-      return (gymId: string): ClimbLog[] =>
-        state.logs.filter(log => log.gymId === gymId)
-    },
-
-    getLogsBySession: (state) => {
-      return (sessionId: string): ClimbLog[] =>
-        state.logs.filter(log => log.sessionId === sessionId)
-    },
-
-    getLastLogByRoute: (state) => {
-      return (routeId: string): ClimbLog | null =>
-        state.logs
-          .filter(log => log.routeId === routeId)
-          .sort(
-            (a, b) =>
-              new Date(b.climbedAt).getTime() -
-              new Date(a.climbedAt).getTime(),
-          )[0] ?? null
     },
 
     getSummaryByRoute: (state) => {
@@ -106,14 +83,6 @@ export const useClimbLogStore = defineStore('climbLogs', {
       return this.fetchMyLogs({ gymId })
     },
 
-    async fetchLogsBySession(sessionId: string): Promise<ClimbLog[]> {
-      return this.fetchMyLogs({ sessionId })
-    },
-
-    async fetchToppedLogs(): Promise<ClimbLog[]> {
-      return this.fetchMyLogs({ topped: true })
-    },
-
     async createLog(payload: CreateClimbLogPayload): Promise<ClimbLog> {
       this.isSaving = true
       this.error = null
@@ -126,42 +95,9 @@ export const useClimbLogStore = defineStore('climbLogs', {
           ...this.logs.filter(log => log.id !== createdLog.id),
         ]
 
-        this.currentLog = createdLog
-
         return createdLog
       } catch (error: unknown) {
         this.error = getErrorMessage(error, 'Failed to create climb log')
-        throw error
-      } finally {
-        this.isSaving = false
-      }
-    },
-
-    async updateLog(
-      id: string,
-      payload: UpdateClimbLogPayload,
-    ): Promise<ClimbLog> {
-      this.isSaving = true
-      this.error = null
-
-      try {
-        const updatedLog = await climbLogApi.update(id, payload)
-
-        const index = this.logs.findIndex(log => log.id === id)
-
-        if (index !== -1) {
-          this.logs[index] = updatedLog
-        } else {
-          this.logs.unshift(updatedLog)
-        }
-
-        if (this.currentLog?.id === id) {
-          this.currentLog = updatedLog
-        }
-
-        return updatedLog
-      } catch (error: unknown) {
-        this.error = getErrorMessage(error, 'Failed to update climb log')
         throw error
       } finally {
         this.isSaving = false
@@ -175,10 +111,6 @@ export const useClimbLogStore = defineStore('climbLogs', {
         await climbLogApi.delete(id)
 
         this.logs = this.logs.filter(log => log.id !== id)
-
-        if (this.currentLog?.id === id) {
-          this.currentLog = null
-        }
       } catch (error: unknown) {
         this.error = getErrorMessage(error, 'Failed to delete climb log')
         throw error
@@ -203,12 +135,5 @@ export const useClimbLogStore = defineStore('climbLogs', {
       )
     },
 
-    clearCurrentLog(): void {
-      this.currentLog = null
-    },
-
-    clearError(): void {
-      this.error = null
-    },
   },
 })
