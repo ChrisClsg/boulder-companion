@@ -20,6 +20,7 @@ public record User(
     String email,
     Role role,
     List<String> favoriteGyms,
+    List<String> favoriteRoutes,
     List<String> gymAdminFor,
     List<String> routeSetterFor,
     @CreatedDate Instant createdAt
@@ -39,6 +40,7 @@ public record User(
             email,
             role,
             safeList(favoriteGyms),
+            safeList(favoriteRoutes),
             safeList(gymAdminFor),
             safeList(routeSetterFor),
             createdAt
@@ -57,6 +59,7 @@ public record User(
             email,
             role,
             append(favoriteGyms, gymId),
+            safeList(favoriteRoutes),
             safeList(gymAdminFor),
             safeList(routeSetterFor),
             createdAt
@@ -75,6 +78,45 @@ public record User(
             email,
             role,
             remove(favoriteGyms, gymId),
+            safeList(favoriteRoutes),
+            safeList(gymAdminFor),
+            safeList(routeSetterFor),
+            createdAt
+        );
+    }
+
+    public User addFavoriteRoute(String routeId) {
+        if (routeId == null || routeId.isBlank() || contains(favoriteRoutes, routeId)) {
+            return this;
+        }
+
+        return new User(
+            id,
+            githubId,
+            name,
+            email,
+            role,
+            safeList(favoriteGyms),
+            append(favoriteRoutes, routeId),
+            safeList(gymAdminFor),
+            safeList(routeSetterFor),
+            createdAt
+        );
+    }
+
+    public User removeFavoriteRoute(String routeId) {
+        if (routeId == null || routeId.isBlank() || !contains(favoriteRoutes, routeId)) {
+            return this;
+        }
+
+        return new User(
+            id,
+            githubId,
+            name,
+            email,
+            role,
+            safeList(favoriteGyms),
+            remove(favoriteRoutes, routeId),
             safeList(gymAdminFor),
             safeList(routeSetterFor),
             createdAt
@@ -93,6 +135,7 @@ public record User(
             email,
             role,
             safeList(favoriteGyms),
+            safeList(favoriteRoutes),
             append(gymAdminFor, gymId),
             safeList(routeSetterFor),
             createdAt
@@ -111,6 +154,7 @@ public record User(
             email,
             role,
             safeList(favoriteGyms),
+            safeList(favoriteRoutes),
             remove(gymAdminFor, gymId),
             safeList(routeSetterFor),
             createdAt
@@ -129,6 +173,7 @@ public record User(
             email,
             role,
             safeList(favoriteGyms),
+            safeList(favoriteRoutes),
             safeList(gymAdminFor),
             append(routeSetterFor, gymId),
             createdAt
@@ -147,6 +192,7 @@ public record User(
             email,
             role,
             safeList(favoriteGyms),
+            safeList(favoriteRoutes),
             safeList(gymAdminFor),
             remove(routeSetterFor, gymId),
             createdAt

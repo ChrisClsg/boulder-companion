@@ -11,6 +11,7 @@ public record UserDto(
     String email,
     User.Role role,
     List<String> favoriteGyms,
+    List<String> favoriteRoutes,
     List<String> gymAdminFor,
     List<String> routeSetterFor
 ) {
@@ -23,6 +24,7 @@ public record UserDto(
         user.email(),
         user.role(),
         safeList(user.favoriteGyms()),
+        safeList(user.favoriteRoutes()),
         safeList(user.gymAdminFor()),
         safeList(user.routeSetterFor())
     );

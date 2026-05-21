@@ -1,9 +1,11 @@
 package de.clsg.boulder_companion.service;
 
 import de.clsg.boulder_companion.dto.GymDto;
+import de.clsg.boulder_companion.dto.RouteDto;
 import de.clsg.boulder_companion.dto.UserDto;
 import de.clsg.boulder_companion.model.User;
 import de.clsg.boulder_companion.repository.GymRepository;
+import de.clsg.boulder_companion.repository.RouteRepository;
 import de.clsg.boulder_companion.repository.UserRepository;
 
 import java.util.List;
@@ -18,15 +20,18 @@ public class UserService {
 
   private final UserRepository userRepository;
   private final GymRepository gymRepository;
+  private final RouteRepository routeRepository;
   private final AuthService authService;
 
   public UserService(
       UserRepository userRepository,
       GymRepository gymRepository,
+      RouteRepository routeRepository,
       AuthService authService
   ) {
     this.userRepository = userRepository;
     this.gymRepository = gymRepository;
+    this.routeRepository = routeRepository;
     this.authService = authService;
   }
 
@@ -62,6 +67,43 @@ public class UserService {
     User user = authService.getOrCreateUser(principal);
 
     User updatedUser = user.removeFavoriteGym(gymId);
+    User savedUser = userRepository.save(updatedUser);
+
+    return UserDto.fromUser(savedUser);
+  }
+
+  public List<RouteDto> getFavoriteRoutes(OAuth2User principal) {
+    User user = authService.getOrCreateUser(principal);
+
+    List<String> favoriteRouteIds = user.favoriteRoutes() == null
+        ? List.of()
+        : user.favoriteRoutes();
+
+    return routeRepository.findAllById(favoriteRouteIds).stream()
+        .map(RouteDto::fromRoute)
+        .toList();
+  }
+
+  public UserDto addFavoriteRoute(OAuth2User principal, String routeId) {
+    User user = authService.getOrCreateUser(principal);
+
+    if (!routeRepository.existsById(routeId)) {
+      throw new ResponseStatusException(
+          HttpStatus.NOT_FOUND,
+          "Route not found with id: " + routeId
+      );
+    }
+
+    User updatedUser = user.addFavoriteRoute(routeId);
+    User savedUser = userRepository.save(updatedUser);
+
+    return UserDto.fromUser(savedUser);
+  }
+
+  public UserDto removeFavoriteRoute(OAuth2User principal, String routeId) {
+    User user = authService.getOrCreateUser(principal);
+
+    User updatedUser = user.removeFavoriteRoute(routeId);
     User savedUser = userRepository.save(updatedUser);
 
     return UserDto.fromUser(savedUser);

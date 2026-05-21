@@ -175,12 +175,28 @@
           </div>
 
           <div class="route-title-block">
-            <h1 class="route-title">
-              {{ routeData.name }}
-            </h1>
+            <div class="row items-start justify-between no-wrap">
+              <div>
+                <h1 class="route-title">
+                  {{ routeData.name }}
+                </h1>
 
-            <div class="text-body1 text-grey-7">
-              {{ routeData.wall }}
+                <div class="text-body1 text-grey-7">
+                  {{ routeData.wall }}
+                </div>
+              </div>
+
+              <q-btn
+                v-if="authStore.isAuthenticated"
+                round
+                flat
+                class="q-ml-sm"
+                :icon="isFavorite ? 'favorite' : 'favorite_border'"
+                :color="isFavorite ? 'red' : 'grey-5'"
+                :loading="favoriteLoading"
+                :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+                @click.stop.prevent="toggleFavorite"
+              />
             </div>
           </div>
 
@@ -282,12 +298,15 @@ import { useAuthStore } from 'stores/authStore'
 import { useRouteStore } from 'src/stores/routeStore'
 import { useClimbLogStore } from 'src/stores/climbLogStore'
 import { useRouteFeedbackStore } from 'src/stores/routeFeedbackStore'
+import { useFavoriteStore } from 'src/stores/favoriteStore'
+import { favoriteApi } from 'src/api'
 import RouteActionsPanel from 'src/components/routes/RouteActionsPanel.vue'
 import ClimbLogCard from 'src/components/climbLogs/ClimbLogCard.vue'
 import { getErrorMessage } from 'src/utils/errors'
 import { formatClimbedAt } from 'src/utils/climbLog'
 import type {
   ClimbLog,
+  Route,
   RoutePersonalSummary,
 } from 'src/types'
 
@@ -299,15 +318,41 @@ const authStore = useAuthStore()
 const routeStore = useRouteStore()
 const climbLogStore = useClimbLogStore()
 const routeFeedbackStore = useRouteFeedbackStore()
+const favoriteStore = useFavoriteStore()
 
 const loading = ref(false)
 const deletingLogId = ref<string | null>(null)
 const error = ref<string | null>(null)
 const activeImage = ref(0)
+const favoriteLoading = ref(false)
 
 const routeId = computed(() => route.params.id as string)
 
 const routeData = computed(() => routeStore.currentRoute)
+
+const isFavorite = computed(() =>
+  favoriteStore.favoriteRoutes.some((r: Route) => r.id === routeId.value),
+)
+
+const toggleFavorite = async () => {
+  if (favoriteLoading.value) return
+  favoriteLoading.value = true
+  try {
+    if (isFavorite.value) {
+      await favoriteApi.removeFavoriteRoute(routeId.value)
+    } else {
+      await favoriteApi.addFavoriteRoute(routeId.value)
+    }
+    await favoriteStore.fetchFavoriteRoutes()
+  } catch (err: unknown) {
+    $q.notify({
+      message: getErrorMessage(err, 'Failed to update favorites'),
+      type: 'negative',
+    })
+  } finally {
+    favoriteLoading.value = false
+  }
+}
 
 const logs = computed(() =>
   climbLogStore.getLogsByRoute(routeId.value),
@@ -322,6 +367,7 @@ const fetchPageData = async () => {
       routeStore.fetchRouteById(routeId.value),
       climbLogStore.fetchLogsByRoute(routeId.value),
       routeFeedbackStore.fetchMyFeedback(routeId.value),
+      favoriteStore.fetchFavoriteRoutes(),
     ])
   } catch (err: unknown) {
     error.value = getErrorMessage(err, 'Failed to fetch route details')
@@ -494,6 +540,15 @@ onMounted(async () => {
 
   .route-title-block { display: none; }
   .grid-area-content { padding-top: 0; }
+}
+
+.detail-favorite-btn {
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+.detail-favorite-btn:hover {
+  background: rgba(0, 0, 0, 0.42);
 }
 
 /* ── Carousel ─────────────────────────────────────────────── */
