@@ -28,6 +28,7 @@ class UserTest {
                 List.of(),
                 List.of(),
                 List.of(),
+                List.of(),
                 NOW
         );
     }
@@ -162,6 +163,110 @@ class UserTest {
             User result = withGym.removeFavoriteGym("gym-99");
 
             assertThat(result).isSameAs(withGym);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // addFavoriteRoute / removeFavoriteRoute
+    // -------------------------------------------------------------------------
+
+    @Nested
+    @DisplayName("addFavoriteRoute()")
+    class AddFavoriteRoute {
+
+        @Test
+        @DisplayName("adds a new routeId to an empty list")
+        void addFavoriteRoute_emptyList_addsRoute() {
+            User user = baseUser().addFavoriteRoute("route-1");
+
+            assertThat(user.favoriteRoutes()).containsExactly("route-1");
+        }
+
+        @Test
+        @DisplayName("adds a second distinct routeId")
+        void addFavoriteRoute_existingEntry_appendsNewRoute() {
+            User user = baseUser().addFavoriteRoute("route-1").addFavoriteRoute("route-2");
+
+            assertThat(user.favoriteRoutes()).containsExactly("route-1", "route-2");
+        }
+
+        @Test
+        @DisplayName("null routeId is a no-op")
+        void addFavoriteRoute_nullRouteId_returnsUnchanged() {
+            User original = baseUser();
+            User result = original.addFavoriteRoute(null);
+
+            assertThat(result).isSameAs(original);
+        }
+
+        @Test
+        @DisplayName("blank routeId is a no-op")
+        void addFavoriteRoute_blankRouteId_returnsUnchanged() {
+            User original = baseUser();
+            User result = original.addFavoriteRoute("   ");
+
+            assertThat(result).isSameAs(original);
+        }
+
+        @Test
+        @DisplayName("duplicate routeId is a no-op")
+        void addFavoriteRoute_duplicateRouteId_returnsUnchanged() {
+            User withRoute = baseUser().addFavoriteRoute("route-1");
+            User result = withRoute.addFavoriteRoute("route-1");
+
+            assertThat(result).isSameAs(withRoute);
+            assertThat(result.favoriteRoutes()).hasSize(1);
+        }
+    }
+
+    @Nested
+    @DisplayName("removeFavoriteRoute()")
+    class RemoveFavoriteRoute {
+
+        @Test
+        @DisplayName("removes an existing routeId")
+        void removeFavoriteRoute_existingRoute_removesIt() {
+            User user = baseUser().addFavoriteRoute("route-1").removeFavoriteRoute("route-1");
+
+            assertThat(user.favoriteRoutes()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("removes only the targeted routeId, leaving others intact")
+        void removeFavoriteRoute_multipleRoutes_removesOnlyTarget() {
+            User user = baseUser()
+                    .addFavoriteRoute("route-1")
+                    .addFavoriteRoute("route-2")
+                    .removeFavoriteRoute("route-1");
+
+            assertThat(user.favoriteRoutes()).containsExactly("route-2");
+        }
+
+        @Test
+        @DisplayName("null routeId is a no-op")
+        void removeFavoriteRoute_nullRouteId_returnsUnchanged() {
+            User withRoute = baseUser().addFavoriteRoute("route-1");
+            User result = withRoute.removeFavoriteRoute(null);
+
+            assertThat(result).isSameAs(withRoute);
+        }
+
+        @Test
+        @DisplayName("blank routeId is a no-op")
+        void removeFavoriteRoute_blankRouteId_returnsUnchanged() {
+            User withRoute = baseUser().addFavoriteRoute("route-1");
+            User result = withRoute.removeFavoriteRoute("  ");
+
+            assertThat(result).isSameAs(withRoute);
+        }
+
+        @Test
+        @DisplayName("routeId not in list is a no-op")
+        void removeFavoriteRoute_routeIdNotPresent_returnsUnchanged() {
+            User withRoute = baseUser().addFavoriteRoute("route-1");
+            User result = withRoute.removeFavoriteRoute("route-99");
+
+            assertThat(result).isSameAs(withRoute);
         }
     }
 

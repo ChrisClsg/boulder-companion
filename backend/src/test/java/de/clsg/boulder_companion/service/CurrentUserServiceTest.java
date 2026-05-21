@@ -55,7 +55,7 @@ class CurrentUserServiceTest {
 
     private User makeUser(String id, String githubId) {
         return new User(id, githubId, "Alice", "alice@example.com",
-                User.Role.CLIMBER, List.of(), List.of(), List.of(), NOW);
+                User.Role.CLIMBER, List.of(), List.of(), List.of(), List.of(), NOW);
     }
 
     // -------------------------------------------------------------------------

@@ -48,7 +48,7 @@ class AuthServiceTest {
     }
 
     private User savedUser(String id, String githubId, String name, String email) {
-        return new User(id, githubId, name, email, User.Role.CLIMBER, List.of(), List.of(), List.of(), NOW);
+        return new User(id, githubId, name, email, User.Role.CLIMBER, List.of(), List.of(), List.of(), List.of(), NOW);
     }
 
     // -------------------------------------------------------------------------
@@ -91,7 +91,7 @@ class AuthServiceTest {
             when(userRepository.findByGithubId("99")).thenReturn(Optional.empty());
 
             User savedUser = new User(null, "99", "New User", "new@example.com",
-                    User.Role.CLIMBER, List.of(), List.of(), List.of(), null);
+                    User.Role.CLIMBER, List.of(), List.of(), List.of(), List.of(), null);
             when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
             User result = authService.getOrCreateUser(principal);
@@ -111,7 +111,7 @@ class AuthServiceTest {
             when(userRepository.findByGithubId("77")).thenReturn(Optional.empty());
 
             User newUser = new User(null, "77", "githubuser", null,
-                    User.Role.CLIMBER, List.of(), List.of(), List.of(), null);
+                    User.Role.CLIMBER, List.of(), List.of(), List.of(), List.of(), null);
             when(userRepository.save(any(User.class))).thenReturn(newUser);
 
             User result = authService.getOrCreateUser(principal);
@@ -128,7 +128,7 @@ class AuthServiceTest {
             when(userRepository.findByGithubId("55")).thenReturn(Optional.empty());
 
             User newUser = new User(null, "55", "coderX", null,
-                    User.Role.CLIMBER, List.of(), List.of(), List.of(), null);
+                    User.Role.CLIMBER, List.of(), List.of(), List.of(), List.of(), null);
             when(userRepository.save(argThat(u -> "coderX".equals(u.name())))).thenReturn(newUser);
 
             User result = authService.getOrCreateUser(principal);

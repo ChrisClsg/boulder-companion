@@ -5,6 +5,7 @@ export interface User {
   email: string
   role: 'CLIMBER' | 'GYM_ADMIN' | 'ROUTE_SETTER'
   favoriteGyms: string[]
+  favoriteRoutes: string[]
   gymAdminFor: string[]
   routeSetterFor: string[]
 }

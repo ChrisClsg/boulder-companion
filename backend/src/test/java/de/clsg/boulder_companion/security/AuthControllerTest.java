@@ -70,7 +70,7 @@ class AuthControllerTest {
         @DisplayName("returns 200 with user DTO when authenticated via OAuth2")
         void getCurrentUser_authenticated_returns200WithDto() throws Exception {
             UserDto dto = new UserDto("u-1", "42", "Alice", "alice@example.com",
-                    User.Role.CLIMBER, List.of(), List.of(), List.of());
+                    User.Role.CLIMBER, List.of(), List.of(), List.of(), List.of());
             when(authService.getOrCreateCurrentUser(any())).thenReturn(dto);
 
             mockMvc.perform(get("/api/auth/me")

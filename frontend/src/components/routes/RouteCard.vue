@@ -19,6 +19,19 @@
       >
         <div class="absolute-top route-image-overlay" />
 
+        <q-btn
+          v-if="authStore.isAuthenticated"
+          round
+          flat
+          dense
+          class="favorite-btn"
+          :icon="isFavorite ? 'favorite' : 'favorite_border'"
+          :color="isFavorite ? 'red' : 'white'"
+          :loading="favoriteLoading"
+          :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+          @click.stop.prevent="toggleFavorite"
+        />
+
         <q-chip
           color="primary"
           text-color="white"
@@ -53,6 +66,19 @@
       v-else
       class="route-placeholder"
     >
+      <q-btn
+        v-if="authStore.isAuthenticated"
+        round
+        flat
+        dense
+        class="favorite-btn"
+        :icon="isFavorite ? 'favorite' : 'favorite_border'"
+        :color="isFavorite ? 'red' : 'grey-6'"
+        :loading="favoriteLoading"
+        :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+        @click.stop.prevent="toggleFavorite"
+      />
+
       <q-chip
         color="primary"
         text-color="white"
@@ -159,17 +185,57 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useQuasar } from 'quasar'
 import RouteActionsPanel from 'src/components/routes/RouteActionsPanel.vue'
 import { useRouteActions } from 'src/composables/useRouteActions'
+import { useAuthStore } from 'src/stores/authStore'
+import { useFavoriteStore } from 'src/stores/favoriteStore'
+import { favoriteApi } from 'src/api'
+import { getErrorMessage } from 'src/utils/errors'
 import type { Route } from 'src/types'
 
 const props = defineProps<{
   route: Route
 }>()
 
+const $q = useQuasar()
+const authStore = useAuthStore()
+const favoriteStore = useFavoriteStore()
+
 const activeSlide = ref(0)
 const quickLogOpen = ref(false)
+const favoriteLoading = ref(false)
+
+const isFavorite = computed(() =>
+  favoriteStore.favoriteRoutes.some((r: Route) => r.id === props.route.id),
+)
+
+const toggleFavorite = async () => {
+  if (favoriteLoading.value) return
+  favoriteLoading.value = true
+  try {
+    if (isFavorite.value) {
+      await favoriteApi.removeFavoriteRoute(props.route.id)
+    } else {
+      await favoriteApi.addFavoriteRoute(props.route.id)
+    }
+    await favoriteStore.fetchFavoriteRoutes()
+  } catch (error: unknown) {
+    $q.notify({
+      message: getErrorMessage(error, 'Failed to update favorites'),
+      type: 'negative',
+    })
+  } finally {
+    favoriteLoading.value = false
+  }
+}
+
+onMounted(() => {
+  if (authStore.isAuthenticated && favoriteStore.favoriteRoutes.length === 0) {
+    void favoriteStore.fetchFavoriteRoutes()
+  }
+})
 
 const { personalSummary } =
   useRouteActions(() => props.route.id)
@@ -280,6 +346,7 @@ const formatDate = (value: string): string => {
 }
 
 .route-placeholder {
+  position: relative;
   aspect-ratio: 4 / 5;
   min-height: 280px;
   display: flex;
@@ -288,6 +355,19 @@ const formatDate = (value: string): string => {
   background:
     radial-gradient(circle at top right, rgba(25, 118, 210, 0.16), transparent 34%),
     linear-gradient(135deg, #f5f7fb, #e8eef8);
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+.favorite-btn:hover {
+  background: rgba(0, 0, 0, 0.42);
 }
 
 .personal-section {

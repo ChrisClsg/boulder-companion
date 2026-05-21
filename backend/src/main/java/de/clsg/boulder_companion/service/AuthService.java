@@ -50,6 +50,7 @@ public class AuthService {
         List.of(),
         List.of(),
         List.of(),
+        List.of(),
         null
     );
 
