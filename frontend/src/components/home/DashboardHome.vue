@@ -49,12 +49,12 @@
       >
         <q-card-section>
           <div class="summary-icon">
-            <q-icon name="favorite" size="26px" />
+            <q-icon name="check" size="26px" />
           </div>
 
           <div>
             <span>Topped routes</span>
-            <strong>0</strong>
+            <strong>{{ climbStatsStore.summary?.toppedCount ?? 0 }}</strong>
           </div>
         </q-card-section>
       </q-card>
@@ -62,12 +62,12 @@
       <q-card flat bordered class="summary-card">
         <q-card-section>
           <div class="summary-icon">
-            <q-icon name="route" size="26px" />
+            <q-icon name="percent" size="26px" />
           </div>
 
           <div>
             <span>Topped Percentage</span>
-            <strong>0</strong>
+            <strong>{{ climbStatsStore.summary?.toppedPercentage ?? 0 }}%</strong>
           </div>
         </q-card-section>
       </q-card>
@@ -75,12 +75,12 @@
       <q-card flat bordered class="summary-card">
         <q-card-section>
           <div class="summary-icon">
-            <q-icon name="calendar_month" size="26px" />
+            <q-icon name="bolt" size="26px" />
           </div>
 
           <div>
             <span>Flashed Percentage</span>
-            <strong>0</strong>
+            <strong>{{ climbStatsStore.summary?.flashedPercentage ?? 0 }}%</strong>
           </div>
         </q-card-section>
       </q-card>
@@ -93,21 +93,21 @@
 
           <div>
             <span>Average attempts/top</span>
-            <strong>0</strong>
+            <strong>{{ climbStatsStore.summary?.averageAttemptsPerTop?.toFixed(1) ?? 0 }}</strong>
           </div>
         </q-card-section>
       </q-card>
     </div>
 
-    <div v-if="favoriteStore.isLoadingFavoriteGyms" class="state state--loading">
+    <div v-if="favoriteStore.isLoadingFavoriteGyms || climbStatsStore.isLoading" class="state state--loading">
       <q-spinner-dots color="primary" size="40px" />
       <div class="text-body2 text-grey-6 q-mt-sm">
-        Loading favorite gyms...
+        Loading dashboard...
       </div>
     </div>
 
     <q-card
-      v-else-if="favoriteStore.error"
+      v-else-if="favoriteStore.error || climbStatsStore.error"
       flat
       bordered
       class="dashboard-card error-card"
@@ -273,12 +273,14 @@ import { useFavoriteStore } from 'src/stores/favoriteStore'
 import { useClimbLogStore } from 'src/stores/climbLogStore'
 import { useGymStore } from 'src/stores/gymStore'
 import { useRouteStore } from 'src/stores/routeStore'
+import { useClimbStatsStore } from 'src/stores/climbStatsStore'
 import { formatClimbedAt } from 'src/utils/climbLog'
 
 const favoriteStore = useFavoriteStore()
 const climbLogStore = useClimbLogStore()
 const gymStore = useGymStore()
 const routeStore = useRouteStore()
+const climbStatsStore = useClimbStatsStore()
 
 const recentLogs = computed(() =>
   [...climbLogStore.logs]
@@ -300,6 +302,7 @@ const loadDashboard = async () => {
     favoriteStore.fetchFavoriteGyms(),
     gymStore.fetchGyms(),
     climbLogStore.fetchMyLogs(),
+    climbStatsStore.fetchSummary(),
   ])
 
   const gymIds = new Set(climbLogStore.logs.map(log => log.gymId))
