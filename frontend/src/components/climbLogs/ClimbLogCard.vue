@@ -9,7 +9,7 @@
     <q-card-section>
       <div class="log-card-content">
         <div class="log-main">
-          <div :style="fixedChipWidth ? 'width: 7rem' : undefined">
+          <div :style="fixedChipWidth ? ('width: ' + (typeof fixedChipWidth === 'string' ? fixedChipWidth : '7rem')) : '7rem'">
             <q-chip
               :dense="denseChip"
               :color="logColor(log)"
