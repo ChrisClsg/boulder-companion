@@ -26,6 +26,7 @@
         </div>
 
         <q-btn
+          v-if="!hideDelete"
           flat
           round
           dense
@@ -48,13 +49,15 @@ const props = withDefaults(defineProps<{
   log: ClimbLog
   clickable?: boolean
   denseChip?: boolean
-  fixedChipWidth?: boolean
+  fixedChipWidth?: boolean | string
   deleting?: boolean
+  hideDelete?: boolean
 }>(), {
   clickable: false,
   denseChip: false,
-  fixedChipWidth: false,
+  fixedChipWidth: true,
   deleting: false,
+  hideDelete: false,
 })
 
 const emit = defineEmits<{

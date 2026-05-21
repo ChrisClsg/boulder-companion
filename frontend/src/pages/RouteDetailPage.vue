@@ -154,6 +154,7 @@
                 dense-chip
                 :deleting="deletingLogId === log.id"
                 @delete="handleDelete"
+                fixed-chip-width="5.5rem"
               >
                 <div class="text-subtitle1 text-weight-bold">
                   {{ log.attempts }}

@@ -109,7 +109,6 @@
           :key="log.id"
           :log="log"
           clickable
-          fixed-chip-width
           :deleting="deletingLogId === log.id"
           @delete="handleDelete"
         >

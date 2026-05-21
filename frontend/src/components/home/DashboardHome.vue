@@ -21,11 +21,12 @@
 
       <div class="quick-actions">
         <q-btn
-          label="Log climb"
+          label="Climb logs"
           color="primary"
           unelevated
           rounded
-          icon="add"
+          icon="history"
+          :to="'/climb-logs'"
         />
 
         <q-btn
@@ -33,6 +34,7 @@
           flat
           rounded
           icon="fitness_center"
+          :to="'/gyms'"
         />
       </div>
     </div>
@@ -178,9 +180,17 @@
 
               <h2>Recently climbed</h2>
             </div>
+
+            <q-btn
+              flat
+              round
+              dense
+              icon="arrow_forward"
+              :to="'/climb-logs'"
+            />
           </div>
 
-          <div class="empty-panel empty-panel--compact">
+          <div v-if="recentLogs.length === 0" class="empty-panel empty-panel--compact">
             <q-icon name="route" size="40px" color="grey-5" />
 
             <div class="text-subtitle1 q-mt-sm">
@@ -190,6 +200,28 @@
             <p>
               Once you start logging climbs, your recent routes will show up here.
             </p>
+          </div>
+
+          <div v-else class="logs-list q-mt-md">
+            <ClimbLogCard
+              v-for="log in recentLogs"
+              :key="log.id"
+              :log="log"
+              clickable
+              hide-delete
+              fixed-chip-width="10rem"
+            >
+              <div class="text-subtitle1 text-weight-bold">
+                {{ routeName(log.routeId) }}
+              </div>
+
+              <div class="text-caption text-grey-6">
+                {{ gymName(log.gymId) }}<template v-if="wallName(log.routeId)"> · {{ wallName(log.routeId) }}</template> ·
+                {{ log.attempts }}
+                {{ log.attempts === 1 ? 'attempt' : 'attempts' }} ·
+                {{ formatClimbedAt(log.climbedAt) }}
+              </div>
+            </ClimbLogCard>
           </div>
         </q-card-section>
       </q-card>
@@ -226,15 +258,45 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import CardGrid from 'src/components/CardGrid.vue'
 import GymCard from 'src/components/GymCard.vue'
+import ClimbLogCard from 'src/components/climbLogs/ClimbLogCard.vue'
 import { useFavoriteStore } from 'src/stores/favoriteStore'
+import { useClimbLogStore } from 'src/stores/climbLogStore'
+import { useGymStore } from 'src/stores/gymStore'
+import { useRouteStore } from 'src/stores/routeStore'
+import { formatClimbedAt } from 'src/utils/climbLog'
 
 const favoriteStore = useFavoriteStore()
+const climbLogStore = useClimbLogStore()
+const gymStore = useGymStore()
+const routeStore = useRouteStore()
+
+const recentLogs = computed(() =>
+  [...climbLogStore.logs]
+    .sort((a, b) => new Date(b.climbedAt).getTime() - new Date(a.climbedAt).getTime())
+    .slice(0, 5),
+)
+
+const routeName = (routeId: string): string =>
+  routeStore.getRoute(routeId)?.name ?? 'Unknown route'
+
+const gymName = (gymId: string): string =>
+  gymStore.getGym(gymId)?.name ?? 'Unknown gym'
+
+const wallName = (routeId: string): string =>
+  routeStore.getRoute(routeId)?.wall ?? ''
 
 const loadDashboard = async () => {
-  await favoriteStore.fetchFavoriteGyms()
+  await Promise.all([
+    favoriteStore.fetchFavoriteGyms(),
+    gymStore.fetchGyms(),
+    climbLogStore.fetchMyLogs(),
+  ])
+
+  const gymIds = new Set(climbLogStore.logs.map(log => log.gymId))
+  await Promise.allSettled([...gymIds].map(gymId => routeStore.fetchRoutesByGym(gymId)))
 }
 
 onMounted(loadDashboard)
