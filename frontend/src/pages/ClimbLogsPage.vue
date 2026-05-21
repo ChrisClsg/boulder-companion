@@ -271,7 +271,7 @@ onMounted(fetchPageData)
 <style scoped>
 .climb-logs-page {
   width: 100%;
-  max-width: 1040px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
