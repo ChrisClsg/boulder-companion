@@ -129,7 +129,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useGymStore } from 'stores/gymStore'
 import { useRouteStore } from 'stores/routeStore'
@@ -142,6 +143,8 @@ import type { ClimbLog } from 'src/types'
 type ResultFilter = 'attempted' | 'topped' | 'flashed'
 
 const $q = useQuasar()
+const vueRoute = useRoute()
+const router = useRouter()
 
 const gymStore = useGymStore()
 const routeStore = useRouteStore()
@@ -155,9 +158,22 @@ const filter = ref<{
   gymId: string | null
   result: ResultFilter | null
 }>({
-  gymId: null,
-  result: null,
+  gymId: (vueRoute.query.gymId as string) || null,
+  result: (vueRoute.query.result as ResultFilter) || null,
 })
+
+watch(
+  filter,
+  (val) => {
+    void router.replace({
+      query: {
+        ...(val.gymId ? { gymId: val.gymId } : {}),
+        ...(val.result ? { result: val.result } : {}),
+      },
+    })
+  },
+  { deep: true },
+)
 
 const logs = computed(() => climbLogStore.logs)
 
