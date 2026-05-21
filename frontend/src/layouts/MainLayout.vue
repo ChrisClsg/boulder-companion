@@ -163,6 +163,8 @@ async function handleLogout() {
 .app-brand__accent {
   color: #1976d2;
   margin-left: 4px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
 .app-action-btn {
