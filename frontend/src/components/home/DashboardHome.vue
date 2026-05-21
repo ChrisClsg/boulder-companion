@@ -40,15 +40,21 @@
     </div>
 
     <div class="summary-grid">
-      <q-card flat bordered class="summary-card">
+      <q-card
+        flat
+        bordered
+        class="summary-card"
+        @click="$router.push('/routes?result=topped')"
+        style="cursor: pointer"
+      >
         <q-card-section>
           <div class="summary-icon">
             <q-icon name="favorite" size="26px" />
           </div>
 
           <div>
-            <span>Favorite gyms</span>
-            <strong>{{ favoriteStore.favoriteGyms.length }}</strong>
+            <span>Topped routes</span>
+            <strong>0</strong>
           </div>
         </q-card-section>
       </q-card>
@@ -60,7 +66,7 @@
           </div>
 
           <div>
-            <span>Recent routes</span>
+            <span>Topped Percentage</span>
             <strong>0</strong>
           </div>
         </q-card-section>
@@ -73,7 +79,7 @@
           </div>
 
           <div>
-            <span>Sessions this month</span>
+            <span>Flashed Percentage</span>
             <strong>0</strong>
           </div>
         </q-card-section>
@@ -86,8 +92,8 @@
           </div>
 
           <div>
-            <span>Current streak</span>
-            <strong>0d</strong>
+            <span>Average attempts/top</span>
+            <strong>0</strong>
           </div>
         </q-card-section>
       </q-card>
