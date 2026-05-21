@@ -209,7 +209,7 @@
               :log="log"
               clickable
               hide-delete
-              fixed-chip-width="12rem"
+              fixed-chip-width="150px"
             >
               <div class="text-subtitle1 text-weight-bold">
                 {{ routeName(log.routeId) }}
