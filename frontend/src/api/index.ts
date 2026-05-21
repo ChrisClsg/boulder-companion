@@ -5,4 +5,5 @@ export { routeApi } from './routes'
 export { climbLogApi } from './climbLogs'
 export { routeFeedbackApi } from './routeFeedbacks'
 export { favoriteApi } from './favorites'
+export { climbStatsApi } from './climbStats'
 

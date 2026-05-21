@@ -121,3 +121,10 @@ export type RoutePersonalSummary = {
   flashed: boolean
   lastLog: ClimbLog | null
 }
+
+export type ClimbStatsSummary = {
+  toppedCount: number
+  toppedPercentage: number
+  flashedPercentage: number
+  averageAttemptsPerTop: number
+}
