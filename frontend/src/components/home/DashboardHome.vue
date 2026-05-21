@@ -207,6 +207,7 @@
               v-for="log in recentLogs"
               :key="log.id"
               :log="log"
+              class="q-mt-sm"
               clickable
               hide-delete
               fixed-chip-width="150px"

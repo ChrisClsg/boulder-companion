@@ -110,7 +110,10 @@
             </q-card-section>
           </q-card>
 
-          <card-grid v-else>
+          <card-grid
+            v-else
+            variant="compact"
+          >
             <gym-card
               v-for="gym in filteredFavoriteGyms"
               :key="gym.id"
@@ -176,7 +179,10 @@
             </q-card-section>
           </q-card>
 
-          <card-grid v-else>
+          <card-grid
+            v-else
+            variant="compact"
+          >
             <gym-card
               v-for="gym in filteredOtherGyms"
               :key="gym.id"

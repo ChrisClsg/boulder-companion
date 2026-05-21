@@ -31,8 +31,7 @@ withDefaults(
 }
 
 .card-grid--compact {
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  justify-content: stretch;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 360px));
 }
 
 @media (max-width: 600px) {
