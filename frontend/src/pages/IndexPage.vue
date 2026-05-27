@@ -1,85 +1,110 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
+  <q-page padding>
+    <div class="home-page">
+      <div v-if="loading" class="state state--loading">
+        <q-spinner-dots color="primary" size="44px" />
+        <div class="text-body2 text-grey-6 q-mt-sm">
+          Loading your climbing world...
+        </div>
+      </div>
 
-    <q-btn
-      label="Login"
-      color="primary"
-      @click="login"
-    ></q-btn>
+      <q-card
+        v-else-if="error"
+        flat
+        bordered
+        class="state state--error"
+      >
+        <q-card-section>
+          <q-icon
+            name="error_outline"
+            size="44px"
+            color="negative"
+          />
 
-    <q-btn
-      label="logout"
-      color="primary"
-      @click="logout"
-    ></q-btn>
+          <div class="text-h6 q-mt-sm">
+            Something went wrong
+          </div>
 
-    <q-btn
-      label="User Info"
-      color="primary"
-      @click="loadUser"
-    ></q-btn>
+          <div class="text-body2 text-grey-7 q-mt-xs">
+            {{ error }}
+          </div>
+
+          <q-btn
+            label="Try again"
+            color="primary"
+            unelevated
+            rounded
+            icon="refresh"
+            class="q-mt-md"
+            @click="initialize"
+          />
+        </q-card-section>
+      </q-card>
+
+      <dashboard-home v-else-if="authStore.isAuthenticated" />
+
+      <public-home
+        v-else
+        @login="authStore.loginWithGithub"
+      />
+    </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ExampleComponent.vue';
-import { api } from 'src/boot/axios';
+import { ref, onMounted } from 'vue'
+import { useQuasar } from 'quasar'
+import { useAuthStore } from 'src/stores/authStore'
+import { getErrorMessage } from 'src/utils/errors'
+import PublicHome from 'src/components/home/PublicHome.vue'
+import DashboardHome from 'src/components/home/DashboardHome.vue'
 
-const login = () => {
-  const host:string = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin;
+const $q = useQuasar()
+const authStore = useAuthStore()
 
-  console.log('Login clicked, redirecting to:', host + '/oauth2/authorization/github');
-  window.open(host + '/oauth2/authorization/github', '_self');
-}
+const loading = ref(false)
+const error = ref<string | null>(null)
 
-const logout = () => {
-  const host:string = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin;
+const initialize = async () => {
+  loading.value = true
+  error.value = null
 
-  window.open(host + '/logout', '_self');
-}
+  try {
+    await authStore.fetchUser()
+  } catch (err: unknown) {
+    error.value = getErrorMessage(err, 'Failed to load home page')
 
-const loadUser = () => {
-  api.get('/auth/me')
-    .then(response => {
-      console.log('User data:', response.data);
+    $q.notify({
+      message: error.value,
+      type: 'negative',
     })
-    .catch(error => {
-      console.error('Error loading user data:', error);
-    });
+  } finally {
+    loading.value = false
+  }
 }
 
-const todos = ref<Todo[]>([
-  {
-    id: 1,
-    content: 'ct1'
-  },
-  {
-    id: 2,
-    content: 'ct2'
-  },
-  {
-    id: 3,
-    content: 'ct3'
-  },
-  {
-    id: 4,
-    content: 'ct4'
-  },
-  {
-    id: 5,
-    content: 'ct5'
-  }
-]);
-
-const meta = ref<Meta>({
-  totalCount: 1200
-});
+onMounted(initialize)
 </script>
+
+<style scoped>
+.home-page {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.state {
+  max-width: 520px;
+  margin: 64px auto;
+  text-align: center;
+}
+
+.state--loading {
+  padding: 48px 24px;
+}
+
+.state--error {
+  border-radius: 24px;
+  padding: 20px;
+}
+</style>
