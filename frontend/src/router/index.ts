@@ -5,6 +5,7 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
+import { useAuthStore } from 'src/stores/authStore';
 import routes from './routes';
 
 /*
@@ -29,6 +30,15 @@ export default defineRouter((/* { store, ssrContext } */) => {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  // Re-sync auth state after each navigation so the header/drawer stay accurate.
+  // The 100 ms delay lets Vue finish rendering the incoming route before the
+  // fetch triggers a potential re-render (avoids a flash of unauthenticated UI).
+  Router.afterEach(() => {
+    setTimeout(() => {
+      useAuthStore().fetchUser().catch(console.error);
+    }, 100);
   });
 
   return Router;

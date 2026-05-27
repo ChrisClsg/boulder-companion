@@ -1,18 +1,57 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [
+      {
+        path: '',
+        name: 'Home',
+        component: () => import('pages/IndexPage.vue'),
+      },
+
+      {
+        path: 'gyms',
+        name: 'GymsList',
+        component: () => import('pages/GymsListPage.vue'),
+      },
+      {
+        path: 'gyms/:id',
+        name: 'GymDetail',
+        component: () => import('pages/GymDetailPage.vue'),
+        props: true,
+      },
+      {
+        path: 'routes',
+        name: 'RoutesList',
+        component: () => import('pages/RoutesListPage.vue'),
+      },
+      {
+        path: 'routes/:id',
+        name: 'RouteDetail',
+        component: () => import('pages/RouteDetailPage.vue'),
+        props: true,
+      },
+      {
+        path: 'climb-logs',
+        name: 'ClimbLogs',
+        component: () => import('pages/ClimbLogsPage.vue'),
+      },
+
+      {
+        path: 'profile',
+        name: 'Profile',
+        component: () => import('pages/ProfilePage.vue'),
+      },
+    ],
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '/:catchAll(.*)*',
+    name: 'NotFound',
     component: () => import('pages/ErrorNotFound.vue'),
   },
-];
+]
 
-export default routes;
+export default routes
