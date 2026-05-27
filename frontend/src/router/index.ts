@@ -5,6 +5,7 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
+import { Notify } from 'quasar';
 import { useAuthStore } from 'src/stores/authStore';
 import routes from './routes';
 
@@ -30,6 +31,24 @@ export default defineRouter((/* { store, ssrContext } */) => {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  // Block unauthenticated access to protected routes.
+  Router.beforeEach(async (to) => {
+    if (!to.meta.requiresAuth) return true;
+
+    const authStore = useAuthStore();
+    await authStore.fetchUser(); // idempotent — cached via hasFetchedUser
+
+    if (authStore.isAuthenticated) return true;
+
+    Notify.create({
+      type: 'warning',
+      message: 'Please log in to access this page.',
+      position: 'top',
+      timeout: 3000,
+    });
+    return { name: 'Home' };
   });
 
   // Re-sync auth state after each navigation so the header/drawer stay accurate.
